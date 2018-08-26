@@ -113,7 +113,7 @@ For the final step, SMEG estimates growth rate of representatives strains using 
 
 *SNP-method --> Slower method, estimates growth rates for more strains*
 
-**Output**
+# Output
 
 For every sample, a table of results (.txt) displaying strain-specific growth rate (SMEG) and genome coverage is generated. If -e flag is set, all tables will be merged into a single matrix file called "merged_table.txt" and a heatmap (.pdf) displaying growth rates (SMEG) across all samples with hierachical clustering is generated.
 
