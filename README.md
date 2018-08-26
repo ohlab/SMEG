@@ -86,20 +86,20 @@ It is highly recommended to run the example test to ensure proper installation b
     -h         Display this message
 
 
-**build_species module** 
+### build_species module #
 
 Pre-compiled species database are available from xxxxxx. 
 
 The species database is built using strains of a species of interest. Strains are typically downloaded from NCBI but custom strains can be used. For species having > 700 strains (e.g. *E. coli*), it is advisable to build the database using strains with a complete genome. Also, a subset of strains can be used for database building by specifying a file listing specific strains via the -l flag. SMEG aligns the strains to generate a phylogenetic tree which is then used to group strains into clusters. Two different types of clustering output are generated. In the first output (clusters_deepSplit0), strains are grouped in the absence of cluster splitting sensitivity (deepSplit = 0) which generates **fewer and bigger clusters**. In the second output (clusters_deepSplit4), **many smaller clusters** are created in the presence of cluster splitting sensitivity (deepSplit = 4).  
 
 
-**build_rep module** 
+### build_rep module # 
 
 SMEG first identifies the strains (using pathoscope) present in your dataset to create a dataset-specific representative database. The -d flag specifies how the dataset-specific strains should be clustered; deepSplit = 0 would create **fewer and bigger clusters** while deepSplit = 4 generates **many smaller clusters**. The strain of a cluster with the highest median relative abundance is chosen as the representative strain for that cluster. SMEG assumes strains in a cluster would have similar growth rates and can be represented by an individual member. These representative strains are then used to create the dataset-specific database. **NOTE: Delimiter seperating paired reads must be the underscore ( _ ) symbol.  Reads must also have the .fastq (and not .fq) extension.**  
 
 Additionally, if you have *a priori* knowledge of the strains present in your samples, you can use the -c flag to specify a file listing your strains which are directly used to create the database.    
 
-**growth_est module**
+### growth_est module #
 
 For the final step, SMEG estimates growth rate of representatives strains using gene dosage or SNP-based method. The choice of method (-m flag) depends on the deepSplit method in the previous step (i.e build_rep module). **If deepSplit = 4 option was used to cluster representative strains, SNP-based method (default) should be used.** Gene dosage method, which is much faster and requires fewer algorithmic steps, is only suitable for deepSplit method = 0. Nonetheless, SNP-based method is applicable to ALL deepSplit options.   
 
@@ -113,7 +113,7 @@ For the final step, SMEG estimates growth rate of representatives strains using 
 
 *SNP-method --> Slower method, estimates growth rates for more strains*
 
-##### OUTPUT #
+**Output**
 For every sample, a table of results (.txt) displaying strain-specific growth rate (SMEG) and genome coverage is generated. If -e flag is set, all tables will be merged into a single matrix file called "merged_table.txt" and a heatmap (.pdf) displaying growth rates (SMEG) across all samples with hierachical clustering is generated.
 
 
@@ -126,7 +126,7 @@ For every sample, a table of results (.txt) displaying strain-specific growth ra
     getopt,
     ggplot2,
     gsubfn,
-    gplots
+    gplots,
     ape,
     dynamicTreeCut,
     WGCNA,
