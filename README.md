@@ -32,7 +32,7 @@ Installation of SMEG is through anaconda/miniconda. Please follow the exact inst
                 
 4.    **Install SMEG**
 
-`conda install smeg`
+      `conda install smeg`
 
 It is highly recommended to run the example test to ensure proper installation before running SMEG on your dataset.
 
