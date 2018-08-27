@@ -12,6 +12,8 @@ Installation of SMEG is through anaconda/miniconda. Please follow the exact inst
 
 1.    Ensure you have **gcc compiler**
 
+2.    **Download OrthoANIu** from https://www.ezbiocloud.net/tools/orthoaniu and add the folder to your path (echo "export PATH=$PATH:/path/to/folder" >> ~/.bashrc)  
+
 2.    **Install usearch**  - If you do not have usearch already installed, download and install usearch from https://drive5.com/usearch/download.html and follow the installation steps detailed in this link https://www.drive5.com/usearch/manual/install.html
 
 3.    **Install pathoscope**
