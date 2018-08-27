@@ -16,13 +16,13 @@ Installation of SMEG is through anaconda/miniconda. Please follow the exact inst
 
 2.    **Install usearch**  - If you do not have usearch already installed, 
 
-      `download usearch from https://drive5.com/usearch/download.html` 
+      download usearch from `https://drive5.com/usearch/download.html` 
       
-      `Rename the downloaded filename to "usearch". For example, to rename usearch11.0.667_i86linux32, simply run the following command  < rename usearch11.0.667_i86linux32 usearch usearch11.0.667_i86linux32 >`
+      Rename the downloaded filename to "usearch". For example, to rename usearch11.0.667_i86linux32, simply run the following command  `rename usearch11.0.667_i86linux32 usearch usearch11.0.667_i86linux32`
       
-      `chmod +x usearch`
+      Add execute permissions `chmod +x usearch`
       
-      `Add folder to path (echo "export PATH=$PATH:/path/to/folder" >> ~/.bashrc)`
+      Add folder to path `echo "export PATH=$PATH:/path/to/folder" >> ~/.bashrc`
       
       -- Test installation --
       
