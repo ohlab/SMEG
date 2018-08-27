@@ -133,6 +133,7 @@ For every sample, a table of results (.txt) displaying strain-specific growth ra
     data.table
     
 - gcc 
+- OrthoANIu
 - usearch 
 - parallel 
 - Mauve 
