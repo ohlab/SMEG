@@ -10,7 +10,7 @@ SMEG pipeline consists of three modules;
 # INSTALLATION
 Installation of SMEG is through anaconda/miniconda. Please follow the exact installation guidelines provided in this section.
 
-1.    Ensure you have **gcc compiler**
+1.    Ensure you have **gcc compiler >=4.8.5**
 
 2.    **Download OrthoANIu** from https://www.ezbiocloud.net/tools/orthoaniu and add the folder of the downloaded file to your path (echo "export PATH=$PATH:/path/to/folder" >> ~/.bashrc)  
 
