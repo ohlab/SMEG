@@ -12,13 +12,13 @@ Installation of SMEG is through anaconda/miniconda. Please follow the exact inst
 
 1.    Ensure you have **gcc compiler >=4.8.5**
 
-2.    **Download OrthoANIu** from https://www.ezbiocloud.net/tools/orthoaniu and add the folder of the downloaded file to your path (echo "export PATH=$PATH:/path/to/folder" >> ~/.bashrc)  
+2.    **Download OrthoANIu** from https://www.ezbiocloud.net/tools/orthoaniu and add the folder of the downloaded file (i.e. OAU.jar) to your path (echo "export PATH=$PATH:/path/to/folder" >> ~/.bashrc)  
 
 2.    **Install usearch**  - If you do not have usearch already installed, 
 
       download usearch from `https://drive5.com/usearch/download.html` 
       
-      Rename the downloaded filename to "usearch". For example, to rename usearch11.0.667_i86linux32, simply run the following command  `rename usearch11.0.667_i86linux32 usearch usearch11.0.667_i86linux32`
+      Rename the downloaded filename to simply "usearch". For example, to rename usearch11.0.667_i86linux32, simply run the following command  `rename usearch11.0.667_i86linux32 usearch usearch11.0.667_i86linux32`
       
       Add execute permissions `chmod +x usearch`
       
