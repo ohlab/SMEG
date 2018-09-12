@@ -282,9 +282,9 @@ fi
       echo "    -s         Species database directory"
       echo "    -d         Representative strains database directory"
       echo "    -c  FLOAT  Coverage cutoff (>= 1) [default 1]"
-      echo "    -m  INT    SMEG method (0 = SNP-method, 1 = gene-dosage method) [default = 0]"
+      echo "    -m  INT    SMEG method (0 = SNP-method, 1 = gene-based method) [default = 0]"
       echo "    -t  FLOAT  Theta value for bin size (bin size = no of unique SNPs x theta)" 
-      echo "               Not compatible with gene-dosage method (i.e. -m 1)  [default 0.06]"
+      echo "               Not compatible with gene-based method (i.e. -m 1)  [default 0.06]"
       echo "    -l         Path to file listing a subset of reads for analysis"
       echo "               [default = analyze all samples in Reads directory]"
       echo "    -e         merge output tables into a single matrix file and generate heatmap"
@@ -313,9 +313,9 @@ then
       echo "    -s         Species database directory"
       echo "    -d         Representative strains database directory"
       echo "    -c  FLOAT  Coverage cutoff (>= 1) [default 1]"
-      echo "    -m  INT    SMEG method (0 = SNP-method, 1 = gene-dosage method) [default = 0]"
+      echo "    -m  INT    SMEG method (0 = SNP-method, 1 = gene-based method) [default = 0]"
       echo "    -t  FLOAT  Theta value for bin size (bin size = no of unique SNPs x theta)"
-      echo "               Not compatible with gene-dosage method (i.e. -m 1)  [default 0.06]"
+      echo "               Not compatible with gene-based method (i.e. -m 1)  [default 0.06]"
       echo "    -l         Path to file listing a subset of reads for analysis"
       echo "               [default = analyze all samples in Reads directory]"
       echo "    -e         merge output tables into a single matrix file and generate heatmap"
@@ -351,7 +351,7 @@ if (( $(bc <<< "$COV_CUTOFF < 1") )); then
 fi
 if  [[ $METHOD != 1 ]] && [[ $METHOD != 0 ]]; then
     echo "-m [option] requires an integer value of 0 or 1"
-    echo "SNP-method = 0, gene-dosage method = 1"
+    echo "SNP-method = 0, gene-based method = 1"
     exit 1
 fi
 if ! [[ $THETA =~ $FLOAT ]] && [[ $THETA != 0.06 ]]; then
@@ -359,7 +359,7 @@ if ! [[ $THETA =~ $FLOAT ]] && [[ $THETA != 0.06 ]]; then
     exit 1
 fi
 if [[ $THETA != 0.06 ]] && [ $METHOD == 1 ]; then
-    echo "-t [option] is incompatible with gene dosage method"
+    echo "-t [option] is incompatible with gene based method"
     exit 1
 fi
 if [[ $THETA == 0 ]]; then
@@ -800,8 +800,8 @@ else
 fi
 ################
 
-if [ $METHOD == 1 ]; then # i.e. gene dosage
-echo "gene dosage method activated"
+if [ $METHOD == 1 ]; then # i.e. gene-based method
+echo "gene-based method activated"
 
 mkdir -p $ODR
 cd $REP
