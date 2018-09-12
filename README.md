@@ -89,9 +89,9 @@ Installation of SMEG is through anaconda/miniconda. Please follow the exact inst
     -s         Species database directory
     -d         Representative strains database directory
     -c  FLOAT  Coverage cutoff (>= 1) [default 1]
-    -m  INT    SMEG method (0 = SNP-method, 1 = gene-dosage method) [default = 0]
+    -m  INT    SMEG method (0 = SNP-method, 1 = gene-based method) [default = 0]
     -t  FLOAT  Theta value for bin size (bin size = no of unique SNPs x theta)
-               Not compatible with gene-dosage method (i.e. -m 1)  [default 0.06]
+               Not compatible with gene-based method (i.e. -m 1)  [default 0.06]
     -l         Path to file listing a subset of reads for analysis
                [default = analyze all samples in Reads directory]
     -e         merge output tables into a single matrix file and generate heatmap
@@ -114,15 +114,15 @@ Additionally, if you have *a priori* knowledge of the strains present in your sa
 
 ### growth_est module #
 
-For the final step, SMEG estimates growth rate of representatives strains using gene dosage or SNP-based method. The choice of method (-m flag) depends on the deepSplit method in the previous step (i.e build_rep module). **If deepSplit = 4 option was used to generate representative strains, SNP-based method (default) should be used.** Gene dosage method, which is much faster and requires fewer algorithmic steps, is only suitable for deepSplit method = 0. Nonetheless, SNP-based method is applicable to ALL deepSplit options.   
+For the final step, SMEG estimates growth rate of representatives strains using gene-based or SNP-based method. The choice of method (-m flag) depends on the deepSplit method in the previous step (i.e build_rep module). **If deepSplit = 4 option was used to generate representative strains, SNP-based method (default) should be used.** Gene-based method, which is much faster and requires fewer algorithmic steps, is only suitable for deepSplit method = 0. Nonetheless, SNP-based method is applicable to ALL deepSplit options.   
 
 *Summary*
 
-*DeepSplit = 0 ---> Gene dosage or SNP-method*
+*DeepSplit = 0 ---> Gene-based or SNP-method*
 
 *DeepSplit = 4 ---> SNP-method*
 
-*Gene dosage method --> Fast method, estimates growth rates for fewer strains*
+*Gene-based method --> Fast method, estimates growth rates for fewer strains*
 
 *SNP-method --> Slower method, estimates growth rates for more strains*
 
