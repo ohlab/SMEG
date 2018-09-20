@@ -14,7 +14,7 @@ Installation of SMEG is through anaconda/miniconda. Please follow the exact inst
 
 2.    **Download OrthoANIu** from https://www.ezbiocloud.net/tools/orthoaniu and add the folder of the downloaded file (i.e. OAU.jar) to your path (echo "export PATH=$PATH:/path/to/folder" >> ~/.bashrc)  
 
-2.    **Install usearch**  - If you do not have usearch already installed, 
+3.    **Install usearch**  - If you do not have usearch already installed, 
 
       download usearch from `https://drive5.com/usearch/download.html` 
       
@@ -27,27 +27,22 @@ Installation of SMEG is through anaconda/miniconda. Please follow the exact inst
       -- Test installation --
       
       `usearch --version`
-      
-3.    **Install pathoscope**
- 
-      `wget https://github.com/PathoScope/PathoScope/archive/v2.0.6.tar.gz`
-      
-      `tar xvf v2.0.6.tar.gz`
-      
-      `cd PathoScope-2.0.6/`
-      
-      `python setup.py install`
-      
-      -- Test the installation --
-      
-      `pathoscope -h`
-      
-      **NOTE: do NOT install pathoscope via conda as its samtools dependency conflicts with that of SMEG**
-                
+                      
 4.    **Install SMEG**
 
+      Please set up channels in the following order. NOTE that conda-forge has the highest priority.
+      
+      `conda config --add channels defaults`
+      
+      `conda config --add channels bioconda`
+      
+      `conda config --add channels conda-forge`
+      
+      Install SMEG
+      
       `conda install smeg`
 
+      Reload .bashrc environment `source ~/.bashrc`
 
 # USAGE
 
@@ -103,7 +98,7 @@ Installation of SMEG is through anaconda/miniconda. Please follow the exact inst
 
 Pre-compiled species database are available from xxxxxx. 
 
-The species database is built using strains of a species of interest. Strains are typically downloaded from NCBI but custom strains can be used. For species having > 700 strains (e.g. *E. coli*), it is advisable to build the database using strains with a complete genome. Also, a subset of strains can be used for database building by specifying a file listing specific strains via the -l flag. SMEG aligns the strains to generate a phylogenetic tree which is then used to group strains into clusters. Two different types of clustering output are generated. In the first output (clusters_deepSplit0), strains are grouped in the absence of cluster splitting sensitivity (deepSplit = 0) which generates **fewer and bigger clusters**. In the second output (clusters_deepSplit4), **many smaller clusters** are created in the presence of cluster splitting sensitivity (deepSplit = 4).  
+The species database is built using strains of a species of interest. Strains are typically downloaded from NCBI but custom strains can be used. **It is advisable to rename your strains from the conventional names accompanying NCBI genomes. For instance, names such as `GCA_000160335.2_ASM16033v2_genomic.fna` should be renamed**. For species having > 700 strains (e.g. *E. coli*), it is advisable to build the database using strains with a complete genome. Also, a subset of strains can be used for database building by specifying a file listing specific strains via the -l flag. SMEG aligns the strains to generate a phylogenetic tree which is then used to group strains into clusters. Two different types of clustering output are generated. In the first output (clusters_deepSplit0), strains are grouped in the absence of cluster splitting sensitivity (deepSplit = 0) which generates **fewer and bigger clusters**. In the second output (clusters_deepSplit4), **many smaller clusters** are created in the presence of cluster splitting sensitivity (deepSplit = 4).  
 
 
 ### build_rep module # 
@@ -129,6 +124,24 @@ For the final step, SMEG estimates growth rate of representatives strains using 
 # Output
 
 For every sample, a table of results (.txt) displaying strain-specific growth rate (SMEG) and genome coverage is generated. If -e flag is set, all tables will be merged into a single matrix file called "merged_table.txt" and a heatmap (.pdf) displaying growth rates (SMEG) across all samples with hierachical clustering is generated.
+
+# Example usage
+
+Assuming our downloaded strains (e.g *E. coli* strains) are present in a directory named `mygenomes`, we can build our species database by running the following command.
+
+`smeg build_species -g mygenomes -p 16 -o E_coli_species_database`
+
+To estimate growth rate from a given dataset of interest, we first build a representative-strains database prior to growth estimation. In this example, we assume all our paired-end reads are present in a directory called `Reads_folder` and growth predictions would be stored in a directory called `Results`.
+
+`smeg build_rep -r Reads_folder -s E_coli_species_database -o E_coli_rep_database -d 4 -p 16` # SNP-method
+
+`smeg growth_est -r Reads_folder -s E_coli_species_database -d E_coli_rep_database -o Results -p 16 -e`
+
+OR
+
+`smeg build_rep -r Reads_folder -s E_coli_species_database -o E_coli_rep_database -d 0 -p 16` # gene-based method
+
+`smeg growth_est -r Reads_folder -s E_coli_species_database -d E_coli_rep_database -o Results -m 1 -p 16 -e`
 
 
 # DEPENDENCIES
