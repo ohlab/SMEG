@@ -28,7 +28,7 @@ Installation of SMEG is through anaconda/miniconda. Please follow the exact inst
       
       `usearch --version`
       
-4.     **Install pathoscope (requires python 2.7)**
+4.    **Install pathoscope** **(requires python 2.7)**
 
       `wget https://github.com/PathoScope/PathoScope/archive/v2.0.6.tar.gz`
 
