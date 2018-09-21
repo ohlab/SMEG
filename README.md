@@ -128,7 +128,7 @@ Additionally, if you have *a priori* knowledge of the strains present in your sa
 
 ### growth_est module #
 
-For the final step, SMEG estimates growth rate of representatives strains using gene-based or SNP-based method. The choice of method (-m flag) depends on the deepSplit method in the previous step (i.e build_rep module). **If deepSplit = 4 option (default) was used to generate representative strains, SNP-based method (default) should be used.** Gene-based method, which is much faster and requires fewer algorithmic steps, is only suitable for deepSplit method = 0. Nonetheless, SNP-based method is applicable to ALL deepSplit options.   
+For the final step, SMEG estimates growth rate of representatives strains using gene-based or SNP-based method. The choice of method (-m flag) depends on the deepSplit method in the previous step (i.e build_rep module). **If deepSplit = 4 option (default) was used to generate representative strains, SNP-based method (default) should be used.** Gene-based method, which is much faster and requires fewer algorithmic steps, is only suitable for deepSplit method = 0. Nonetheless, SNP-based method is applicable to ALL deepSplit options. Strains with coverage below the cutoff (-c flag) are considered as non-replicating and would have a SMEG score of 1.     
 
 *Summary*
 
