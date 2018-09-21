@@ -12,7 +12,7 @@ Installation of SMEG is through anaconda/miniconda. Please follow the exact inst
 
 1.    Ensure you have **gcc compiler >=4.8.5**
 
-2.    **Download OrthoANIu** from https://www.ezbiocloud.net/tools/orthoaniu and add the folder of the downloaded file (i.e. OAU.jar) to your path (echo "export PATH=$PATH:/path/to/folder" >> ~/.bashrc)  
+2.    **Download OrthoANIu** from https://www.ezbiocloud.net/tools/orthoaniu and add the folder of the downloaded file (i.e. OAU.jar) to your path (echo 'export PATH=$PATH:/path/to/folder' >> ~/.bashrc)  
 
 3.    **Install usearch**  - If you do not have usearch already installed, 
 
@@ -22,13 +22,13 @@ Installation of SMEG is through anaconda/miniconda. Please follow the exact inst
       
       Add execute permissions `chmod +x usearch`
       
-      Add folder to path `echo "export PATH=$PATH:/path/to/folder" >> ~/.bashrc`
+      Add folder to path `echo 'export PATH=$PATH:/path/to/folder' >> ~/.bashrc`
       
       -- Test installation --
       
       `usearch --version`
       
-4.    **Install pathoscope** **(requires python 2.7)**
+4.    **Install pathoscope** **(requires python)**
 
       `wget https://github.com/PathoScope/PathoScope/archive/v2.0.6.tar.gz`
 
@@ -36,7 +36,7 @@ Installation of SMEG is through anaconda/miniconda. Please follow the exact inst
 
       `cd PathoScope-2.0.6/`
 
-      `python setup.py install`
+      `python2.7 setup.py install`
 
       -- Test the installation --
 
@@ -57,7 +57,7 @@ Installation of SMEG is through anaconda/miniconda. Please follow the exact inst
       
       Install SMEG
       
-      `conda install smeg`
+      `conda install smeg=1.0.1=h2d50403_2`
 
       Reload .bashrc environment `source ~/.bashrc`
 
