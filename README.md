@@ -115,18 +115,20 @@ Installation of SMEG is through anaconda/miniconda. Please follow the exact inst
 
 Pre-compiled species database are available from xxxxxx. 
 
-The species database is built using strains of a species of interest. Strains are typically downloaded from NCBI but custom strains can be used. **It is advisable to rename your strains from the conventional names accompanying NCBI genomes. For instance, names such as `GCA_000160335.2_ASM16033v2_genomic.fna` should be renamed**. For species having > 700 strains (e.g. *E. coli*), it is advisable to build the database using strains with a complete genome. Also, a subset of strains can be used for database building by specifying a file listing specific strains via the -l flag. SMEG aligns the strains to generate a phylogenetic tree which is then used to group strains into clusters. Two different types of clustering output are generated. In the first output (clusters_deepSplit0), strains are grouped in the absence of cluster splitting sensitivity (deepSplit = 0) which generates **fewer and bigger clusters**. In the second output (clusters_deepSplit4), **many smaller clusters** are created in the presence of cluster splitting sensitivity (deepSplit = 4).  
+The species database is built using strains of a species of interest. Strains are typically downloaded from NCBI Genbank but custom strains can be used. **Downloaded strains MUST contain at least one COMPLETE reference genome. It is advisable to rename your strains from the conventional names accompanying NCBI genomes. For instance, names such as `GCA_000160335.2_ASM16033v2_genomic.fna` should be renamed**.  For species having > 700 strains (e.g. *E. coli*), it is advisable to build the database using only strains with a complete genome. For convenience, we provided a script `download_genomes.sh` to retrieve and rename genomes. Simply edit lines 2 and 3 to specify the output directory and species name, respectively, and run the script. 
+
+In addition, a subset of strains can be used for database building by specifying a file listing specific strains via the -l flag. SMEG aligns the strains to generate a phylogenetic tree which is then used to group strains into clusters. Outlier strains, defined as having pairwise distances 30 times above the median, are excluded as these may be misclassified genomes or they may contain contaminant contigs. Two different types of clustering output are generated. In the first output (clusters_deepSplit0), strains are grouped in the absence of cluster splitting sensitivity (deepSplit = 0) which generates **fewer and bigger clusters**. In the second output (clusters_deepSplit4), **many smaller clusters** are created in the presence of cluster splitting sensitivity (deepSplit = 4).   
 
 
 ### build_rep module # 
 
-SMEG first identifies the strains (using pathoscope) present in your dataset to create a dataset-specific representative database. The strain of a cluster with the highest median relative abundance is chosen as the representative strain for that cluster. SMEG assumes strains in a cluster would have similar growth rates and can be represented by an individual member. The -d flag is used to specify the clustering method to select representative strains; deepSplit = 0 would create **fewer representative strains** while deepSplit = 4 generates **many representative strains**.  These representative strains are then used to create the dataset-specific database. **NOTE: delimiter seperating paired reads must be the underscore ( _ ) symbol.  Reads must also have the .fastq (and not .fq) extension.**  
+SMEG first identifies the strains (using pathoscope) present in your dataset (i.e collection of metagenomic reads) to create a dataset-specific representative database. The strain of a cluster with the highest median relative abundance is chosen as the representative strain for that cluster. SMEG assumes strains in a cluster would have similar growth rates and can be represented by an individual member. The -d flag is used to specify the clustering method to select representative strains; deepSplit = 0 would create **fewer representative strains** while deepSplit = 4 generates **many representative strains**.  These representative strains are then used to create the dataset-specific database. **NOTE: delimiter seperating paired reads must be the underscore ( _ ) symbol.  Reads must also have the .fastq (and not .fq) extension.**  
 
-Additionally, if you have *a priori* knowledge of the strains present in your samples, you can use the -c flag to specify a file listing your strains which are directly used to create the database.    
+Additionally, if you have *a priori* knowledge of the strains present in your samples, you can simply use the -c flag to specify a file listing your strains which are directly used to create the database.    
 
 ### growth_est module #
 
-For the final step, SMEG estimates growth rate of representatives strains using gene-based or SNP-based method. The choice of method (-m flag) depends on the deepSplit method in the previous step (i.e build_rep module). **If deepSplit = 4 option was used to generate representative strains, SNP-based method (default) should be used.** Gene-based method, which is much faster and requires fewer algorithmic steps, is only suitable for deepSplit method = 0. Nonetheless, SNP-based method is applicable to ALL deepSplit options.   
+For the final step, SMEG estimates growth rate of representatives strains using gene-based or SNP-based method. The choice of method (-m flag) depends on the deepSplit method in the previous step (i.e build_rep module). **If deepSplit = 4 option (default) was used to generate representative strains, SNP-based method (default) should be used.** Gene-based method, which is much faster and requires fewer algorithmic steps, is only suitable for deepSplit method = 0. Nonetheless, SNP-based method is applicable to ALL deepSplit options.   
 
 *Summary*
 
@@ -144,11 +146,11 @@ For every sample, a table of results (.txt) displaying strain-specific growth ra
 
 # Example usage
 
-Assuming our downloaded strains (e.g *E. coli* strains) are present in a directory named `mygenomes`, we can build our species database by running the following command.
+Assuming our downloaded strains (e.g *E. coli* strains) are present in a directory called `mygenomes`, we can build our species database by running the following command.
 
 `smeg build_species -g mygenomes -p 16 -o E_coli_species_database`
 
-To estimate growth rate from a given dataset of interest, we first build a representative-strains database prior to growth estimation. In this example, we assume all our paired-end reads are present in a directory called `Reads_folder` and growth predictions would be stored in a directory called `Results`.
+To estimate microial growth rate from a given dataset of interest, we first build a representative-strains database prior to growth estimation. In this example, we assume all our paired-end reads are present in a directory called `Reads_folder` and growth predictions would be stored in a directory called `Results`.
 
 `smeg build_rep -r Reads_folder -s E_coli_species_database -o E_coli_rep_database -d 4 -p 16` # SNP-method
 
