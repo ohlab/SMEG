@@ -113,13 +113,13 @@ Installation of SMEG is through anaconda/miniconda. Please follow the exact inst
 
 ### build_species module #
 
-Pre-compiled species database are available from **ftp://ftp.jax.org/ohlab/SMEG_species_database/**
-
 The species database is built using strains of a species of interest. Strains are typically downloaded from NCBI Genbank but custom strains can be used. **Downloaded strains MUST contain at least one COMPLETE reference genome. It is advisable to rename your strains from the conventional names accompanying NCBI genomes. For instance, names such as `GCA_000160335.2_ASM16033v2_genomic.fna` should be renamed**.  For species having > 700 strains (e.g. *E. coli*), it is advisable to build the database using only strains with a complete genome. 
 
 For convenience, we provided a script `download_genomes.sh` to retrieve and rename genomes from NCBI Genbank. Simply edit lines 2 and 3 to specify the output directory and species name, respectively, and run the script.
 
 In addition, a subset of strains can be used for database building by specifying a file listing specific strains via the -l flag. SMEG aligns the strains to generate a phylogenetic tree which is then used to group strains into clusters. Outlier strains, defined as having pairwise distances 30 times above the median, are excluded as these may be misclassified genomes or they may contain contaminant contigs. Two different types of clustering output are generated. In the first output (clusters_deepSplit0), strains are grouped in the absence of cluster splitting sensitivity (deepSplit = 0) which generates **fewer and bigger clusters**. In the second output (clusters_deepSplit4), **many smaller clusters** are created in the presence of cluster splitting sensitivity (deepSplit = 4).   
+
+Pre-compiled species database are available from **ftp://ftp.jax.org/ohlab/SMEG_species_database/**
 
 
 ### build_rep module # 
