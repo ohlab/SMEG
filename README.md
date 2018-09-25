@@ -113,7 +113,7 @@ Installation of SMEG is through anaconda/miniconda. Please follow the exact inst
 
 ### build_species module #
 
-Pre-compiled species database are available from ftp://ftp.jax.org/ohlab/SMEG_species_database/
+Pre-compiled species database are available from **ftp://ftp.jax.org/ohlab/SMEG_species_database/**
 
 The species database is built using strains of a species of interest. Strains are typically downloaded from NCBI Genbank but custom strains can be used. **Downloaded strains MUST contain at least one COMPLETE reference genome. It is advisable to rename your strains from the conventional names accompanying NCBI genomes. For instance, names such as `GCA_000160335.2_ASM16033v2_genomic.fna` should be renamed**.  For species having > 700 strains (e.g. *E. coli*), it is advisable to build the database using only strains with a complete genome. 
 
