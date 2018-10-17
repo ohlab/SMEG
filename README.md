@@ -152,7 +152,7 @@ Assuming our downloaded strains (e.g *E. coli* strains) are present in a directo
 
 `smeg build_species -g mygenomes -p 16 -o E_coli_species_database`
 
-To estimate microial growth rate from a given dataset of interest, we first build a representative-strains database prior to growth estimation. In this example, we assume all our paired-end reads are present in a directory called `Reads_folder` and growth predictions would be stored in a directory called `Results`.
+To estimate microbial growth rate from a given dataset of interest, we first build a representative-strains database prior to growth estimation. In this example, we assume all our paired-end reads are present in a directory called `Reads_folder` and growth predictions would be stored in a directory called `Results`.
 
 `smeg build_rep -r Reads_folder -s E_coli_species_database -o E_coli_rep_database -d 4 -p 16` # SNP-method
 
