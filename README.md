@@ -107,48 +107,22 @@ The reference-based approach assumes prior knowledge of strain composition which
 
 SMEG outputs four statistics for a given sample; (i) the median SMEG score from 3 imputations, (ii) the coverage of phylogenetic clusters (in the de novo approach) or the user provided strains (in the reference-based approach), (iii) the number of non-zero SNP sites used for the analysis, and (iv) the range of SMEG with different imputations. strains/clusters with SNPs below the minimum cutoff **(-u flag)** will be assigned a SMEG score of 1. Finally, if -e flag is set, all output will be merged into a single matrix file called "merged_table.txt" and a heatmap (.pdf) displaying growth rates (SMEG) across all samples with hierachical clustering is generated. 
 
-# Example usage
+# Example test
 
-This example involves 12 strains of *Faecalibacterium prausnitzii*, majority of which have been re-ordered to save time. The image below shows the phylogenetic tree of the strains.
+This example involves 12 strains of *Faecalibacterium prausnitzii* and the image below shows the phylogenetic tree of those strains.
+![alt text](https://github.com/ohlab/SMEG/blob/master/smeg_test.png)
 
+We have provided a mock sample containing 2 strains (indicated with red-arrows) which we will exclude from database generation. Thus, these strains will act as novel or uncharacterized strains. Therefore, we will create the database using 10 strains. The expected *ori/ter* ratios for CNCM_I_4543.fna and AF10-13.fna are 1.1 and 1.8 respectively in the sample. To save runtime, we reoredered majority of the draft genomes.
 
-`smeg build_species -g mygenomes -p 16 -o E_coli_species_database`
-
-To estimate microbial growth rate from a given dataset of interest, we first build a representative-strains database prior to growth estimation. In this example, we assume all our paired-end reads are present in a directory called `Reads_folder` and growth predictions would be stored in a directory called `Results`.
-
-`smeg build_rep -r Reads_folder -s E_coli_species_database -o E_coli_rep_database -d 4 -p 16` # SNP-method
-
-`smeg growth_est -r Reads_folder -s E_coli_species_database -d E_coli_rep_database -o Results -p 16 -e`
-
-OR
-
-`smeg build_rep -r Reads_folder -s E_coli_species_database -o E_coli_rep_database -d 0 -p 16` # gene-based method
-
-`smeg growth_est -r Reads_folder -s E_coli_species_database -d E_coli_rep_database -o Results -m 1 -p 16 -e`
-
-
-# DEPENDENCIES
-- R 
-    - Required R libraries - 
-    dplyr,
-    getopt,
-    ggplot2,
-    gsubfn,
-    gplots,
-    ape,
-    dynamicTreeCut,
-    WGCNA,
-    data.table
+    wget https://github.com/ohlab/SMEG/archive/1.1.tar.gz
+    tar xvf 1.1.tar.gz
+    cd SMEG-1.3/test
     
-- gcc 
-- OrthoANIu
-- usearch 
-- parallel 
-- Mauve 
-- Roary 
-- Prokka 
-- Bowtie2 
-- Pathoscope2 
-- samtools >= 1.5 
-- bamtools
-- featureCounts
+    smeg build_species -g . -o test_database -a -p 16
+The 'auto'option is activated and you should have 12 different database options. In `test_database/log.txt`, all parameters resulted in the generation of sufficient unique SNPs for all clusters. Thus, we will select the database generated with the highest SNP assignment threshold (e.g. `test_database/T.0.9`). You can also evaluate strains and their corresponding cluster identity from your selected database e.g. `test_database/T.0.9/clusterOutput.txt`
+
+    smeg growth_est -o Result_denovo -r . -s test_database/T.0.9 -p 8 -x fastq.gz
+
+### DEPENDENCIES #
+    gcc, GNU parallel, Mauve, roary, prokka, bowtie2, samtools, bamtools, bedtools, blastn
+    R libraries (dplyr, getopt, ggplot2, gsubfn, gplots, ape, dynamicTreeCut, seqinr, data.table)
