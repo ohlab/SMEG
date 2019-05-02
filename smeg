@@ -1,0 +1,505 @@
+#!/bin/bash
+
+package=""  # Default to empty package
+SMEG_DIR="$( cd "$( dirname "$(readlink -f ${BASH_SOURCE[0]})" )" && pwd )"
+WDR=$(pwd)
+
+while getopts ":hv" opt; do
+  case ${opt} in
+    h )
+      echo "Usage:"
+      echo "    smeg build_species <options>   Build species database"
+      echo "    smeg growth_est <options>      Estimate strain-specific growth rate"
+      echo "    smeg -v                        Version"
+      echo "    smeg -h                        Display this help message"
+      exit 0
+      ;;
+    v )
+      echo "smeg v1.1" 
+      exit 0
+      ;;
+   \? )
+     echo "Invalid Option: -$OPTARG" 1>&2
+     exit 1
+     ;;
+  esac
+done
+###########################################################################
+if [ $# -eq 0 ];
+then
+      echo "Usage:"
+      echo "    smeg build_species <options>   Build species database"
+      echo "    smeg growth_est <options>      Estimate strain-specific growth rate"
+      echo "    smeg -v                        Version"
+      echo "    smeg -h                        Display this help message"
+    exit 1
+fi
+##########################################################################
+
+shift $((OPTIND -1))
+
+subcommand=$1;
+case "$subcommand" in
+  # Parse options to the first sub command
+  build_species)
+    package=$1; shift  # Remove 'build_species' from the argument list
+    LIST=false
+    NUM_THREAD=4
+    SAT=0.6
+    CNT=50
+    IGNORE_ITER=false
+    AUTO=false
+    KEEP=false
+    REF_ONLY=false
+    INT='^[0-9]+$'
+    FLOAT='^[0-9]+([.][0-9]+)?$'
+    # Process package options
+    while getopts ":g:o:l:p:r:s:t:hiake" opt; do
+      case ${opt} in
+        g )
+          GEN_DIR=$OPTARG
+          ;;
+        o )
+          OUTPUT_DIR=$OPTARG
+          ;;
+        l )
+          LIST=$OPTARG
+          ;;
+	p )
+          NUM_THREAD=$OPTARG
+          ;;
+        s )
+          SAT=$OPTARG
+          ;;
+        t )
+          CNT=$OPTARG
+          ;;
+        i )
+          IGNORE_ITER=true
+          ;;
+        a )
+          AUTO=true
+          ;;
+        r )
+          REPGEN=$OPTARG
+          ;;
+        k )
+          KEEP=true
+          ;;
+        e )
+          REF_ONLY=true
+          ;;
+	h )
+      echo "Usage:"
+      echo "    smeg build_species <options>"
+      echo "    <options>"
+      echo "    -g        Genomes directory"
+      echo "    -o        Output directory"
+      echo "    -l        File listing a subset of genomes for database building"
+      echo "                [default = use all genomes in 'Genomes directory']"
+      echo "    -p INT    Number of threads [default 4]"
+      echo "    -s FLOAT  SNP assignment threshold (range 0.1 - 1) [default 0.6]"
+      echo "    -t INT    Cluster SNPs threshold for iterative clustering [default 50]"
+      echo "    -i        Ignore iterative clustering"
+      echo "    -a        Activate auto-mode"
+      echo "    -r        Representative genome [default = auto select Rep genome]"
+      echo "    -k        Keep Roary output [default = false]"
+      echo "    -e        Create database ONLY applicable with Reference-based SMEG method" 
+      echo "                [default = generate database suitable for both de novo and ref-based methods]"
+      echo "    -h        Display this message"
+      exit 0
+      ;;
+        \? )
+          echo "Invalid Option: -$OPTARG" 1>&2
+          exit 1
+          ;;
+        : )
+          echo "Invalid Option: -$OPTARG requires an argument" 1>&2
+          exit 1
+          ;;
+       *  ) 
+          echo "Unimplemented option: -$OPTARG" >&2
+          exit 1
+          ;;
+esac
+done
+
+if [ $# -eq 0 ];
+then
+      echo "Usage:"
+      echo "    smeg build_species <options>"
+      echo "    <options>"
+      echo "    -g        Genomes directory"
+      echo "    -o        Output directory"
+      echo "    -l        File listing a subset of genomes for database building"
+      echo "                [default = use all genomes in 'Genomes directory']"
+      echo "    -p INT    Number of threads [default 4]"
+      echo "    -s FLOAT  SNP assignment threshold (range 0.1 - 1) [default 0.6]"
+      echo "    -t INT    Cluster SNPs threshold for iterative clustering [default 50]"
+      echo "    -i        Ignore iterative clustering"
+      echo "    -a        Activate auto-mode"
+      echo "    -r        Representative genome [default = auto select Rep genome]"
+      echo "    -k        Keep Roary output [default = false]"
+      echo "    -e        Create database ONLY applicable with Reference-based SMEG method" 
+      echo "                [default = generate database suitable for both de novo and ref-based methods]"
+      echo "    -h        Display this message"
+      exit 1
+fi
+
+if [ "x" == "x$GEN_DIR" ]; then
+  echo "-g [option] is required"
+  exit 1
+fi
+if ! [[ $NUM_THREAD =~ $INT ]] && [[ $NUM_THREAD != 1 ]] ; then
+    echo "-p [option] requires an integer"
+    exit 1
+fi
+if [ "$LIST" != "false" ]; then
+LIS=$(readlink -f $LIST)
+fi
+if ! [[ $SAT =~ $FLOAT ]] || [[ $SAT > 1 ]] || [[ $SAT < 0.1 ]]; then
+    echo "-s [option] requires a numeric value between 0.1 and 1"
+    exit 1
+fi
+if ! [[ $CNT =~ $INT ]] && [[ $CNT != 50 ]]; then
+    echo "-t [option] requires an integer"
+    exit 1
+fi
+if [[ $CNT == 0 ]]; then
+    echo "-t [option] requires a non-zero value"
+    exit 1
+fi
+if  [  "$AUTO" == "true" ] ; then
+    REF_ONLY=false
+fi
+if [ "x" == "x$OUTPUT_DIR" ]; then
+ directory=$(echo "species_database_$(date +%s)")
+ mkdir $WDR/$directory
+ OUTPUT_DIR=$WDR/$directory
+fi
+
+shift $((OPTIND -1))
+    ;;
+###############
+ growth_est)
+    package=$1; shift  # Remove 'growth_est' from the argument list
+   METHOD=0
+   LIST=false
+   GEN_LIST=false
+   DESMAN=false
+   COV_CUTOFF=1
+   READS_EXT="fastq"
+   NUM_THREAD=4
+   CLUS_DET=0.2
+   SAT=0.6
+   INT='^[0-9]+$'
+   FLOAT='^[0-9]+([.][0-9]+)?$'
+   MERGE=false
+   MIN_SNP=50
+   MISMATCH=9999
+    # Process package options
+    while getopts ":r:o:s:u:d:n:l:m:x:t:c:a:g:p:eh" opt; do
+      case ${opt} in
+        r )
+          READS_DIR=$OPTARG
+          ;;
+        x )
+          READS_EXT=$OPTARG
+          ;;
+        o )
+          OUTPUT_DIR=$OPTARG
+          ;;
+        s )
+          SPECIES_DIR=$OPTARG
+          ;;
+	d )
+          CLUS_DET=$OPTARG
+          ;;
+        c )
+          COV_CUTOFF=$OPTARG
+          ;;
+	p )
+          NUM_THREAD=$OPTARG
+          ;;
+        t )
+          SAT=$OPTARG
+          ;;
+        m )
+          METHOD=$OPTARG
+          ;;
+        e )
+          MERGE=true
+          ;;
+        l )
+          LIST=$OPTARG
+          ;;
+        g )
+          GEN_LIST=$OPTARG
+          ;;
+        n )
+          MISMATCH=$OPTARG
+          ;;
+        u )
+          MIN_SNP=$OPTARG
+          ;;
+        a )
+          DESMAN=$OPTARG
+          ;;
+        h )
+      echo "Usage:"
+      echo "    smeg growth_est <options>"
+      echo "    <options>"
+      echo ""
+      echo "  ## MAIN OPTIONS ## "
+      echo "    -r         Reads directory (single-end reads)"
+      echo "    -x         Sample filename extension (fq, fastq, fastq.gz) [default fastq]"
+      echo "    -o         Output directory"
+      echo "    -s         Species database directory"
+      echo "    -m  INT    SMEG method (0 = de novo-based method, 1 = reference-based method) [default = 0]"
+      echo "    -c  FLOAT  Coverage cutoff (>= 1) [default 1]"
+      echo "    -u  INT    Minimum number of SNPs to estimate growth rate [default = 50]"
+      echo "    -l         Path to file listing a subset of reads for analysis"
+      echo "               [default = analyze all samples in Reads directory]"
+      echo ""
+      echo "  ## DE-NOVO BASED APPROACH OPTIONS ## "
+      echo "    -d  FLOAT  Cluster detection threshold (range 0.1 - 1) [default = 0.2]"
+      echo "    -t  FLOAT  Sample-specific SNP assignment threshold (range 0.1 - 1) [default = 0.6]
+"
+      echo "  ## REFERENCE BASED APPROACH OPTIONS ##" 
+      echo "    -g         File listing reference genomes for growth rate estimation"
+      echo "    -a         File listing FULL PATH to DESMAN-resolved strains in fasta format (core-genes)"
+      echo "    -n  INT    Max number of mismatch [default = use default bowtie2 threshold]
+"
+      echo "  ## OTHER OPTIONS ##"
+      echo "    -e         merge output tables into a single matrix file and generate heatmap"
+      echo "    -p  INT    Number of threads [default 4]"
+      echo "    -h         Display this message"
+      exit 0
+      ;;
+        \? )
+          echo "Invalid Option: -$OPTARG" 1>&2
+          exit 1
+          ;;
+        : )
+          echo "Invalid Option: -$OPTARG requires an argument" 1>&2
+          exit 1
+          ;;
+      esac
+    done
+
+if [ $# -eq 0 ];
+then
+  echo "Usage:"
+      echo "    smeg growth_est <options>"
+      echo "    <options>"
+      echo ""
+      echo "  ## MAIN OPTIONS ## "
+      echo "    -r         Reads directory (single-end reads)"
+      echo "    -x         Sample filename extension (fq, fastq, fastq.gz) [default fastq]"
+      echo "    -o         Output directory"
+      echo "    -s         Species database directory"
+      echo "    -m  INT    SMEG method (0 = de novo-based method, 1 = reference-based method) [default = 0]"
+      echo "    -c  FLOAT  Coverage cutoff (>= 1) [default 1]"
+      echo "    -u  INT    Minimum number of SNPs to estimate growth rate [default = 50]"
+      echo "    -l         Path to file listing a subset of reads for analysis"
+      echo "               [default = analyze all samples in Reads directory]"
+      echo ""
+      echo "  ## DE-NOVO BASED APPROACH OPTIONS ## "
+      echo "    -d  FLOAT  Cluster detection threshold (range 0.1 - 1) [default = 0.2]"
+      echo "    -t  FLOAT  Sample-specific SNP assignment threshold (range 0.1 - 1) [default = 0.6]
+"
+      echo "  ## REFERENCE BASED APPROACH OPTIONS ##"
+      echo "    -g         File listing reference genomes for growth rate estimation"
+      echo "    -a         FIle listing FULL PATH to DESMAN-resolved strains in fasta format (core-genes)"
+      echo "    -n  INT    Max number of mismatch [default = use default bowtie2 threshold]
+"
+      echo "  ## OTHER OPTIONS ##"
+      echo "    -e         merge output tables into a single matrix file and generate heatmap"
+      echo "    -p  INT    Number of threads [default 4]"
+      echo "    -h         Display this message"
+      exit 1
+fi
+
+if [ "x" == "x$READS_DIR" ]; then
+  echo "-r [option] is required"
+  exit 1
+fi
+if [ "x" == "x$SPECIES_DIR" ] && [ "$DESMAN" == "false" ]; then
+  echo "-s [option] is required"
+  exit 1
+fi
+if [ "$READS_EXT" != "fq" ] && [ "$READS_EXT" != "fastq" ] && [ "$READS_EXT" != "fastq.gz" ] ; then
+  echo "Invalid filename extension. Recognized extensions are fq, fastq, fastq.gz"
+  exit 1
+fi
+if ! [[ $COV_CUTOFF =~ $FLOAT ]] && [[ $COV_CUTOFF != 1 ]]; then
+    echo "-c [option] requires a numeric value"
+    exit 1
+fi
+if (( $(bc <<< "$COV_CUTOFF < 1") )); then
+    echo "required minimum coverage cutoff is 1"
+    exit 1
+fi
+if  [[ $METHOD != 1 ]] && [[ $METHOD != 0 ]]; then
+    echo "-m [option] requires an integer value of 0 or 1"
+    echo "de novo-based method = 0, reference-based method = 1"
+    exit 1
+fi
+
+if [ "$GEN_LIST" != "false" ] && [ "$DESMAN" != "false" ]; then
+echo "-g [option] and -a [option] cannot be specified simultaneously"
+exit 1
+fi
+if [ "$GEN_LIST" != "false" ] || [ "$DESMAN" != "false" ]; then
+METHOD=1
+if [ "$GEN_LIST" != "false" ]; then
+GEN_LIS=$(readlink -f $GEN_LIST)
+fi
+if [ "$DESMAN" != "false" ]; then
+DESM=$(readlink -f $DESMAN)
+fi
+
+if ! [[ $MISMATCH =~ $INT ]] ; then
+    echo "-n [option] requires an integer"
+    exit 1
+fi
+else
+if ! [[ $SAT =~ $FLOAT ]] || [[ $SAT > 1 ]] || [[ $SAT < 0.1 ]]; then
+    echo "-t [option] requires a numeric value between 0.1 and 1"
+    exit 1
+fi
+if ! [[ $CLUS_DET =~ $FLOAT ]] || [[ $CLUS_DET > 1 ]] || [[ $CLUS_DET < 0.1 ]]; then
+    echo "-d [option] requires a numeric value between 0.1 and 1"
+    exit 1
+fi
+fi
+if ! [[ $MIN_SNP =~ $INT ]] ; then
+    echo "-u [option] requires an integer "
+    exit 1
+fi
+if ! [[ $NUM_THREAD =~ $INT ]] && [[ $NUM_THREAD != 1 ]] ; then
+    echo "-p [option] requires an integer"
+    exit 1
+fi
+
+if [[ $METHOD == 1 ]]; then
+if [ "$GEN_LIST" == "false" ] && [ "$DESMAN" == "false" ]; then
+    echo "Reference-based method (-m = 1) requires input from -g or -a flags"
+    exit 1 
+fi
+fi
+if [ "x" == "x$OUTPUT_DIR" ]; then
+  directory=$(echo "SMEG_growth_$(date +%s)")
+ mkdir $WDR/$directory
+ OUTPUT_DIR=$WDR/$directory
+fi
+if [ "$LIST" != "false" ]; then
+LIS=$(readlink -f $LIST)
+fi
+
+  shift $((OPTIND -1))
+    ;;
+esac
+###################################
+if [ "$package" != "build_species" ] && [ "$package" != "growth_est" ]; then
+  echo "Invalid option"
+  exit 1
+fi
+#############################################
+
+
+echo " ################ Checking for dependencies ########"
+requirements=$(echo "gcc parallel R Mauve roary prokka bowtie2 samtools bamtools bedtools blastn")
+for f in `echo $requirements` 
+do 
+toolCheck=$(type -P $f)
+if [ -z $toolCheck ]; then 
+echo "ERROR: $f missing" 
+echo "Check https://github.com/ohlab/SMEG for required packages"
+exit 1
+else
+echo "$f found"
+fi 
+done
+echo "All required packages found"
+echo " ################ Checking for required R libraries ########"
+###################3
+cd $WDR
+ODR=$(readlink -f $OUTPUT_DIR)
+mkdir -p $ODR
+
+if [ -z "$(ls -A $ODR)" ]; then
+   echo "Output directory ok"
+else
+   echo "ERROR: Output directory not Empty"
+   exit 1
+fi
+####################
+cd $ODR
+Rscript $SMEG_DIR/check_R_libraries.R
+if [ -s .checkedR ]; then
+echo "ERROR: The following R libraries are missing"
+cat .checkedR
+echo "Check https://github.com/ohlab/SMEG for required packages"
+rm .checkedR
+exit 1
+else
+echo "R libraries ok"
+rm .checkedR
+fi
+
+cd $SMEG_DIR
+##############################################
+###########################################
+if [ "$package" == "build_species" ]
+  then
+export GEN_DIR
+export ODR
+export NUM_THREAD
+export SAT
+export KEEP
+export CNT  
+export IGNORE_ITER
+export AUTO
+export SMEG_DIR
+export WDR
+export package
+export LIST
+export REF_ONLY
+export REPGEN
+if [ "$LIST" != "false" ]; then
+export LIS
+fi
+if [ "x$REPGEN" != "x" ]; then
+    export REPGEN
+fi
+
+./build_sp
+else
+export SMEG_DIR
+export WDR
+export package
+export SPECIES_DIR
+export NUM_THREAD
+export READS_DIR
+export ODR
+export METHOD
+export LIST
+export LIS
+export MIN_SNP
+export GEN_LIS
+export GEN_LIST
+export DESM
+export DESMAN
+export COV_CUTOFF
+export READS_EXT
+export CLUS_DET
+export SAT
+export MERGE
+export MISMATCH
+if  [[ $METHOD == 0 ]]; then
+./growth_est_denovo
+else
+./growth_est_ref
+fi
+fi

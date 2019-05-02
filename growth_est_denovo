@@ -1,0 +1,245 @@
+#!/bin/bash
+#############################################
+############################################
+# growth estimation denovo
+############################################
+############################################
+
+cd $WDR
+RDR=$(readlink -f $READS_DIR)
+SPEC=$(readlink -f $SPECIES_DIR)
+echo "$package option activated"
+echo "$WDR is present directory"
+echo "$RDR is the reads directory"
+echo "$ODR is the output directory"
+echo "$SPEC is the species database directory"
+
+################
+
+if [ $METHOD == 0 ]; then # i.e. de novo-based method
+echo "De novo-based method activated"
+
+reference=$(ls $SPEC/Index/*.rev.1.bt2 | sed 's/\.fna.rev.1.bt2//g' |  rev | cut -d'/' -f1 | rev) || exit 1
+
+## get dnaA position
+if [[ -e "$SPEC/misc.txt" ]]; then
+dnaA=$(grep "dnaA position relative to ori is" $SPEC/misc.txt | cut -f7 -d' ')
+else
+dnaA=$(grep "dnaA position relative to ori is" $SPEC/log.txt | cut -f7 -d' ')
+fi
+
+if [ -z "$dnaA" ]; then
+dnaA=0.5
+fi
+############
+
+cd $RDR
+if [ "$LIST" == "false" ]; then
+ls *.$READS_EXT | sed "s/\.$READS_EXT$//" > $ODR/samples.txt || exit 1
+else
+cat $LIS | sed "s/\.$READS_EXT$//" > $ODR/samples.txt || exit 1
+fi
+
+cd $ODR
+
+for i in `cat samples.txt`
+do
+echo "#### ANALYZING SAMPLE $i ######
+"
+mkdir $i
+cd $i
+bowtie2 -x $SPEC/Index/$reference.fna -U $RDR/$i.$READS_EXT -S $i.sam -p $NUM_THREAD --quiet || exit 1
+
+samtools view -@ $NUM_THREAD -bS $i.sam > $i.bam || exit 1
+rm $i.sam
+
+samtools view -@ $NUM_THREAD -b -F 4 $i.bam | samtools sort -@ $NUM_THREAD -o $i.sorted.bam || exit 1
+rm $i.bam
+
+samtools mpileup -a -a -A -B -f $SPEC/$reference.fna $i.sorted.bam > $i.pileup || exit 1
+$SMEG_DIR/pileupParser $i.pileup
+
+rm $i.pileup
+rm $i.sorted.bam
+###################
+sed '1d' polymorphic.site.coverage > polymorphic.site.coverage2
+rm polymorphic.site.coverage
+
+for GENOME in `cat $SPEC/clusters.txt`
+do
+Rscript $SMEG_DIR/SMEG_SNP.R -i $SPEC/$GENOME.Input.txt -p  polymorphic.site.coverage2 -o $GENOME.coord.txt
+
+awk '$8 ~ "a" || $8 ~ "A" {print $2"\011"$1"\011"$3}' $GENOME.coord.txt >> $GENOME.final.temp || exit 1
+awk '$8 ~ "t" || $8 ~ "T" {print $2"\011"$1"\011"$4}' $GENOME.coord.txt >> $GENOME.final.temp || exit 1
+awk '$8 ~ "g" || $8 ~ "G" {print $2"\011"$1"\011"$5}' $GENOME.coord.txt >> $GENOME.final.temp || exit 1
+awk '$8 ~ "c" || $8 ~ "C" {print $2"\011"$1"\011"$6}' $GENOME.coord.txt >> $GENOME.final.temp || exit 1
+
+sort -n -k2,2 $GENOME.final.temp > $i.$GENOME.final.txt || exit 1
+
+rm $GENOME.final.temp
+rm $GENOME.coord.txt
+
+noOfemptySNPs=$(awk '$3 == 0' $i.$GENOME.final.txt | wc -l)
+totalNoOfSNPs=$(grep -c "." $i.$GENOME.final.txt )
+propEmptySNPs=$(echo "scale=3; $noOfemptySNPs/$totalNoOfSNPs" |bc ) || exit 1
+threshold=$(echo "scale=2; 1 - $CLUS_DET" |bc ) || exit 1
+
+if (( $(bc <<< "$propEmptySNPs > $threshold") )); then
+rm $i.$GENOME.final.txt
+fi
+done
+
+exec 3>&2
+exec 2> /dev/null
+ls $i.*.final.txt | rev | cut -d'.' -f3 | rev | cut -c8- > $i.passed_clusters 
+rm $i.*.final.txt
+exec 2>&3
+
+##################
+if [ -s $i.passed_clusters ]; then
+check1=$(grep -c "." $i.passed_clusters)
+check2=$(grep -c "." $SPEC/clusters.txt)
+
+if (( $(bc <<< "$check1 == $check2") )); then
+for clus in `cat $SPEC/clusters.txt`
+do
+cat $SPEC/$clus.Input.txt > $i.$clus.Input.txt
+echo "$clus" >> $i.clusters.txt
+cat $SPEC/clusterOutput.txt > $i.clusterOutput.txt
+done
+
+else
+
+for z in `cat $i.passed_clusters`; do awk '$2 == '$z'' $SPEC/clusterOutput.txt >> $i.clusterOutput.txt; done
+
+cut -f1 $i.clusterOutput.txt > $i.passed_strains.txt
+
+samtools faidx $SPEC/core_gene_alignment.aln $(cat $i.passed_strains.txt) > $i.aln || exit 1
+
+$SMEG_DIR/uniqueClusterSNP $i.aln $i.clusterOutput.txt $NUM_THREAD $SAT $i.SNPs_final.txt
+
+samtools faidx $SPEC/core_gene_alignment.aln $reference > $reference.aln
+Rscript $SMEG_DIR/getPositionWithoutGaps.R -i $i.SNPs_final.txt -x $reference.aln -m 0
+
+########################
+sed '1d' modified_uniq_cluster_SNPs.txt | cut -f1 | sort | uniq > $i.clusters.txt || exit 1
+############
+Rscript $SMEG_DIR/getPositioninRef.R -i modified_uniq_cluster_SNPs.txt -x $SPEC/$reference.core.geneCood.txt -y $SPEC/geneCoordinates.txt
+###########
+
+for GENOME in `cat $i.clusters.txt`
+do
+grep -P '(^|\s)\K'$GENOME'(?=\s|$)' newcoordinates.txt  > $i.$GENOME.Input.txt || exit 1
+done
+rm newcoordinates.txt
+rm modified_uniq_cluster_SNPs.txt
+rm $i.SNPs_final.txt
+rm $reference.aln $i.aln
+rm $i.passed_strains.txt
+
+fi
+
+for GENOME in `cat $i.clusters.txt`
+do
+Rscript $SMEG_DIR/SMEG_SNP.R -i $i.$GENOME.Input.txt -p  polymorphic.site.coverage2 -o $GENOME.coord.txt
+
+awk '$8 ~ "a" || $8 ~ "A" {print $2"\011"$1"\011"$3}' $GENOME.coord.txt >> $GENOME.final.temp || exit 1
+awk '$8 ~ "t" || $8 ~ "T" {print $2"\011"$1"\011"$4}' $GENOME.coord.txt >> $GENOME.final.temp || exit 1
+awk '$8 ~ "g" || $8 ~ "G" {print $2"\011"$1"\011"$5}' $GENOME.coord.txt >> $GENOME.final.temp || exit 1
+awk '$8 ~ "c" || $8 ~ "C" {print $2"\011"$1"\011"$6}' $GENOME.coord.txt >> $GENOME.final.temp || exit 1
+
+sort -n -k2,2 $GENOME.final.temp > $i.$GENOME.final.txt
+
+noOfemptySNPs=$(awk '$3 == 0' $i.$GENOME.final.txt | wc -l)
+totalNoOfSNPs=$(grep -c "." $i.$GENOME.final.txt )
+propEmptySNPs=$(echo "scale=3; $noOfemptySNPs/$totalNoOfSNPs" |bc )
+threshold=$(echo "scale=2; 1 - $CLUS_DET" |bc ) || exit 1
+
+if (( $(bc <<< "$propEmptySNPs > $threshold") )); then
+rm $i.$GENOME.final.txt
+else
+newClusterNum=$(ls $i.$GENOME.final.txt | rev | cut -d'.' -f3 | rev | cut -c8-)
+originalClusterNo=$(grep -w -f <(awk '$2 == '$newClusterNum'' $i.clusterOutput.txt | cut -f1) $SPEC/clusterOutput.txt | cut -f2 | head -1)
+cat $i.$GENOME.final.txt | sort -n -k2,2 >> $i.cluster$originalClusterNo.cov.txt
+rm $i.$GENOME.final.txt
+fi
+
+rm $GENOME.final.temp
+rm $GENOME.coord.txt
+rm $i.$GENOME.Input.txt
+
+done
+
+rm $i.clusterOutput.txt
+rm polymorphic.site.coverage2
+rm $i.clusters.txt
+
+Rscript $SMEG_DIR/SNP_method.R -i $i.temp1.txt -c $COV_CUTOFF -d $dnaA -s $MIN_SNP
+
+awk -F'\t' '{ $2 = ($2 > 10 ? 1 : $2) } 1' OFS='\t' $i.temp1.txt | awk '$3 > '$COV_CUTOFF'' | sed "s/$i.//g" > $i.SMEG.txt
+rm $i.temp1.txt
+printf '1\ni\nCluster\tSMEG\tCoverage\tNo of SNPs\tSMEG range\n.\nw\n' | ed -s $i.SMEG.txt
+rm $i.cluster*.cov.txt
+rm $i.passed_clusters
+#####3
+else
+#####
+rm $i.passed_clusters
+rm polymorphic.site.coverage2
+touch $i.SMEG.txt
+printf '1\ni\nCluster\tSMEG\tCoverage\tNo of SNPs\tSMEG range\n.\nw\n' | ed -s $i.SMEG.txt
+fi
+cp $i.SMEG.txt $ODR/. || exit 1
+cd $ODR
+rm -rf $i
+done
+rm $ODR/samples.txt
+
+####################
+##################
+else
+###
+# REFERENCE METHOD
+#######
+echo "Reference-based method activated"
+fi
+
+#######
+######
+# MERGE OPTION
+######
+#####
+cd $ODR
+if [ "$MERGE" == "true" ]; then
+cat *.SMEG.txt | grep -v "SMEG" | cut -f1 | sort | uniq > SMEG.genomes
+ls *.txt | sed 's/\.txt//g' > SMEG_list.txt
+
+for i in `cat SMEG_list.txt`
+do
+for f in `cat SMEG.genomes`
+do
+paste <(awk '$1 == "'$f'" {print $1}' SMEG.genomes ) <(awk '$1 == "'$f'" {print $2}' $i.txt )  >> $i.temp.merge.txt
+done
+printf '1\ni\nCluster\t'$i'\n.\nw\n' | ed -s $i.temp.merge.txt
+done
+
+for f in *.temp.merge.txt
+do
+cut -f2 $f > $f.tmp
+rm $f
+done
+
+printf '1\ni\nCluster\n.\nw\n' | ed -s SMEG.genomes
+paste -d'\t' SMEG.genomes *.temp.merge.txt.tmp > merged_table.txt
+rm *.temp.merge.txt.tmp
+rm SMEG_list.txt
+rm SMEG.genomes
+exec 3>&2
+exec 2> /dev/null
+Rscript $SMEG_DIR/heatmap.R
+exec 2>&3
+echo "run complete"
+else
+echo "run complete"
+fi
+
