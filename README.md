@@ -1,51 +1,18 @@
 # SMEG
-**Strain-level MEtagenomic Growth estimation (SMEG)** measures growth rates of microbial strains from complex metagenomic dataset. SMEG is able to accurately identify strain(s) associated with different disease conditions even at low coverage (1X). Its high sensitivity to complex admixtures of closely related strains make it applicable to study outbreak epidemiology, infection dynamics, and understanding commensal strain diversity to guide future probiotics development.
+**Strain-level MEtagenomic Growth estimation (SMEG)** measures growth rates of bacterial subspecies or strains from complex metagenomic
+samples. SMEG is capable of identifying novel or uncharacterized strains in a given sample prior to growth estimation. 
 
-SMEG pipeline consists of three modules;
+SMEG pipeline consists of two modules;
 
-1. < build_species > - generates a database for a specie of interest using its member strains.
-2. < build_rep > - generates a dataset-specific representative strains database using strains that are present in a given dataset of interest   
-3. < growth_est > - measure strain-specific growth rates in your dataset
+1. < build_species > - generates a database for a specie of interest using its member strains
+2. < growth_est > - measure strain-specific growth rates in your dataset using either a de novo or reference-based approach
 
 # INSTALLATION
 Installation of SMEG is through anaconda/miniconda. Please follow the exact installation guidelines provided in this section.
 
 1.    Ensure you have **gcc compiler >=4.8.5**
-
-2.    **Download OrthoANIu** from https://www.ezbiocloud.net/tools/orthoaniu and add the folder of the downloaded file (i.e. OAU.jar) to your path (echo 'export PATH=$PATH:/path/to/folder' >> ~/.bashrc)  
-
-3.    **Install usearch**  - If you do not have usearch already installed, 
-
-      download usearch from `https://drive5.com/usearch/download.html` 
-      
-      Rename the downloaded filename to simply "usearch". For example, to rename usearch11.0.667_i86linux32, simply run the following command  `rename usearch11.0.667_i86linux32 usearch usearch11.0.667_i86linux32`
-      
-      Add execute permissions `chmod +x usearch`
-      
-      Add folder to path `echo 'export PATH=$PATH:/path/to/folder' >> ~/.bashrc`
-      
-      -- Test installation --
-      
-      `usearch --version`
-      
-4.    **Install pathoscope** **(requires python)**
-
-      `wget https://github.com/PathoScope/PathoScope/archive/v2.0.6.tar.gz`
-
-      `tar xvf v2.0.6.tar.gz`
-
-      `cd PathoScope-2.0.6/`
-
-      `python2.7 setup.py install`
-
-      -- Test the installation --
-
-      `pathoscope -h`
-
-      **NOTE: do NOT install pathoscope via conda as its samtools dependency conflicts with that of SMEG**
-
-                      
-4.    **Install SMEG**
+              
+2.    **Install SMEG**
 
       Please set up channels in the following order. NOTE that conda-forge has the highest priority.
       
@@ -57,68 +24,48 @@ Installation of SMEG is through anaconda/miniconda. Please follow the exact inst
       
       Install SMEG
       
-      `conda install smeg=1.0.1=h2d50403_2`
+      `conda install smeg=1.1`
 
       Reload .bashrc environment `source ~/.bashrc`
 
 # USAGE
 
+    Usage:
     smeg build_species <options>   Build species database
-    smeg build_rep <options>       Build dataset-specific representative strains database
     smeg growth_est <options>      Estimate strain-specific growth rate
     smeg -v                        Version
     smeg -h                        Display this help message
-
-
-    smeg build_species <options>
-    <options>
-    -g      Genomes directory
-    -o      Output directory
-    -l      Path to file listing a subset of genomes for
-            database building [default = use all genomes in 'Genomes directory']
-    -p INT  Number of threads [default 1]
-    -h      Display this message
-
-
-    smeg build_rep <options>
-    <options>
-    -r         Reads directory (paired-end reads)
-    -o         Output directory
-    -s         Species database directory
-    -d  INT    deepSplit for grouping strains into clusters (0 or 4) [default = 4]
-    -l         Path to file listing a subset of reads to estimate representative
-               strains [default = use all samples in Reads directory]
-    -c         Path to file with customized list of strains for representative database (ONLY use this option IF
-               you are certain your chosen strains belong to different clusters and are present in your dataset)
-    -p  INT    Number of threads [default 1]
-    -h         Display this message
-
-
-    smeg growth_est <options>
-    <options>
-    -r         Reads directory (paired-end reads)
-    -o         Output directory
-    -s         Species database directory
-    -d         Representative strains database directory
-    -c  FLOAT  Coverage cutoff (>= 1) [default 1]
-    -m  INT    SMEG method (0 = SNP-method, 1 = gene-based method) [default = 0]
-    -t  FLOAT  Theta value for bin size (bin size = no of unique SNPs x theta)
-               Not compatible with gene-based method (i.e. -m 1)  [default 0.06]
-    -l         Path to file listing a subset of reads for analysis
-               [default = analyze all samples in Reads directory]
-    -e         merge output tables into a single matrix file and generate heatmap
-    -p  INT    Number of threads [default 1]
-    -h         Display this message
-
-
+    
 ### build_species module #
 
-The species database is built using strains of a species of interest. Strains are typically downloaded from NCBI Genbank but custom strains can be used. **Downloaded strains MUST contain at least one COMPLETE reference genome. It is advisable to rename your strains from the conventional names accompanying NCBI genomes. For instance, names such as `GCA_000160335.2_ASM16033v2_genomic.fna` should be renamed**.  For species having > 700 strains (e.g. *E. coli*), it is advisable to build the database using only strains with a complete genome. 
+The species database is built using strains of a species of interest. Strains are typically downloaded from NCBI Genbank but custom strains can be used. **Downloaded strains MUST contain at least one COMPLETE reference genome**. In the absence of a complete reference genome, the draft genome with the least fragmentation should be reordered (e.g. with Mauve software) using a strain from a closely related species. Also, genome names should not exceed 35 characters. For species having > 700 strains (e.g. *E. coli*), it is advisable to build the database using only strains with a complete genome. 
 
 For convenience, we provided a script `download_genomes.sh` to retrieve and rename genomes from NCBI Genbank. Simply edit lines 2 and 3 to specify the output directory and species name, respectively, and run the script.
 
-In addition, a subset of strains can be used for database building by specifying a file listing specific strains via the -l flag. SMEG aligns the strains to generate a phylogenetic tree which is then used to group strains into clusters. Outlier strains, defined as having pairwise distances 30 times above the median, are excluded as these may be misclassified genomes or they may contain contaminant contigs. Two different types of clustering output are generated. In the first output (clusters_deepSplit0), strains are grouped in the absence of cluster splitting sensitivity (deepSplit = 0) which generates **fewer and bigger clusters**. In the second output (clusters_deepSplit4), **many smaller clusters** are created in the presence of cluster splitting sensitivity (deepSplit = 4).   
+ smeg build_species <options>
+    <options>
+    -g        Genomes directory
+    -o        Output directory
+    -l        File listing a subset of genomes for database building
+                [default = use all genomes in 'Genomes directory']
+    -p INT    Number of threads [default 4]
+    -s FLOAT  SNP assignment threshold (range 0.1 - 1) [default 0.6]
+    -t INT    Cluster SNPs threshold for iterative clustering [default 50]
+    -i        Ignore iterative clustering
+    -a        Activate auto-mode
+    -r        Representative genome [default = auto select Rep genome]
+    -k        Keep Roary output [default = false]
+    -e        Create database ONLY applicable with Reference-based SMEG method
+                [default = generate database suitable for both de novo and ref-based methods]
+    -h        Display this message
 
+A core-genome phylogeny is constructed using the provided strains which is used to assign strains into clusters. Outlier strains, defined as having pairwise distances 30 times above the median are excluded, as these genomes may have been misclassified taxonomically, or may contain contaminant contigs. Generally, the underlying biological assumption is that strains constituting a cluster have high phylogenetic relatedness and will have similar phenotypic properties like growth rate in a sample. 
+
+For each cluster, SMEG identifies cluster-specific unique SNPs, i.e. SNPs that are shared between a given proportion of cluster members, but absent in all strains from other clusters. This proportion is referred to as the SNP assignment threshold **(-s flag)**. For instance, setting the SNP assignment threshold to 0.8 indicates that a unique SNP will only be identified if it is shared between at least 80% of the cluster members and absent in strains from other clusters. If the total number of unique SNPs of a given cluster is below a user-specified threshold **(-t flag)**, SMEG iteratively subclassifies the cluster and infers unique SNPs for each sub cluster. SMEG repeats the sub-classification step for a maximum of 3 iterations or until the threshold is met.  Next,
+SMEG retrieves the coordinates of the cluster-specific SNPs in a representative genome, which is randomly selected from the cluster (after favoring for genome completeness) or can be user-defined **(-r flag)**. If the value provided by the -r flag is absent from the genomes or a draft-genome, SMEG defaults to auto-select. 
+
+**NOTE:** While the optimal value of the SNP assignment threshold will vary depending on the species being analyzed, SMEG has an “auto” option **(-a flag)**, in which different threshold values are tested in parallel and output, giving the user the flexibility to select desired parameters and the associated database. Here, output databases are stored in folders named either T.<num> or F.<num> where T and F represent "ignore iterative clustering" and "do not ignore iterative clustering" respectively. <num> is the SNP assignment threshold. The summary statistics is stored in "log.txt". Typically, a threshold yielding the highest number of unique SNPs with a high SNP assignment threshold is prefarable.   
+      
 Pre-compiled species database are available from **ftp://ftp.jax.org/ohlab/SMEG_species_database/**
 
 
