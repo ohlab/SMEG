@@ -42,22 +42,22 @@ The species database is built using strains of a species of interest. Strains ar
 
 For convenience, we provided a script `download_genomes.sh` to retrieve and rename genomes from NCBI Genbank. Simply edit lines 2 and 3 to specify the output directory and species name, respectively, and run the script.
 
- smeg build_species <options>
-    <options>
-    -g        Genomes directory
-    -o        Output directory
-    -l        File listing a subset of genomes for database building
-                [default = use all genomes in 'Genomes directory']
-    -p INT    Number of threads [default 4]
-    -s FLOAT  SNP assignment threshold (range 0.1 - 1) [default 0.6]
-    -t INT    Cluster SNPs threshold for iterative clustering [default 50]
-    -i        Ignore iterative clustering
-    -a        Activate auto-mode
-    -r        Representative genome [default = auto select Rep genome]
-    -k        Keep Roary output [default = false]
-    -e        Create database ONLY applicable with Reference-based SMEG method
-                [default = generate database suitable for both de novo and ref-based methods]
-    -h        Display this message
+    smeg build_species <options>
+        <options>
+        -g        Genomes directory
+        -o        Output directory
+        -l        File listing a subset of genomes for database building
+                    [default = use all genomes in 'Genomes directory']
+        -p INT    Number of threads [default 4]
+        -s FLOAT  SNP assignment threshold (range 0.1 - 1) [default 0.6]
+        -t INT    Cluster SNPs threshold for iterative clustering [default 50]
+        -i        Ignore iterative clustering
+        -a        Activate auto-mode
+        -r        Representative genome [default = auto select Rep genome]
+        -k        Keep Roary output [default = false]
+        -e        Create database ONLY applicable with Reference-based SMEG method
+                    [default = generate database suitable for both de novo and ref-based methods]
+        -h        Display this message
 
 A core-genome phylogeny is constructed using the provided strains which is used to assign strains into clusters. Outlier strains, defined as having pairwise distances 30 times above the median are excluded, as these genomes may have been misclassified taxonomically, or may contain contaminant contigs. Generally, the underlying biological assumption is that strains constituting a cluster have high phylogenetic relatedness and will have similar phenotypic properties like growth rate in a sample. 
 
