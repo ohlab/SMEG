@@ -25,6 +25,8 @@ Installation of SMEG is through anaconda/miniconda. Please follow the exact inst
           
           Reload .bashrc environment `source ~/.bashrc`
 
+**It is highly recommended you run the example test to ensure proper installation before running SMEG on your dataset**. 
+
 # USAGE
 
     Usage:
