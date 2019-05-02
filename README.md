@@ -126,4 +126,6 @@ The 'auto'option is activated and you should have 12 different database options.
 
 ### DEPENDENCIES #
     gcc, GNU parallel, Mauve, roary, prokka, bowtie2, samtools, bamtools, bedtools, blastn
-    R libraries (dplyr, getopt, ggplot2, gsubfn, gplots, ape, dynamicTreeCut, seqinr, data.table)
+    
+    R libraries 
+    (dplyr, getopt, ggplot2, gsubfn, gplots, ape, dynamicTreeCut, seqinr, data.table)
