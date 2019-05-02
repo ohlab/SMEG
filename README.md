@@ -61,7 +61,9 @@ A core-genome phylogeny is constructed using the provided strains which is used 
 For each cluster, SMEG identifies cluster-specific unique SNPs, i.e. SNPs that are shared between a given proportion of cluster members, but absent in all strains from other clusters. This proportion is referred to as the SNP assignment threshold **(-s flag)**. For instance, setting the SNP assignment threshold to 0.8 indicates that a unique SNP will only be identified if it is shared between at least 80% of the cluster members and absent in strains from other clusters. If the total number of unique SNPs of a given cluster is below a user-specified threshold **(-t flag)**, SMEG iteratively subclassifies the cluster and infers unique SNPs for each sub cluster. SMEG repeats the sub-classification step for a maximum of 3 iterations or until the threshold is met.  Next,
 SMEG retrieves the coordinates of the cluster-specific SNPs in a representative genome, which is randomly selected from the cluster (after favoring for genome completeness) or can be user-defined **(-r flag)**. If the value provided by the -r flag is absent from the genomes or a draft-genome, SMEG defaults to auto-select. 
 
-**NOTE:** While the optimal value of the SNP assignment threshold will vary depending on the species being analyzed, SMEG has an “auto” option **(-a flag)**, in which different threshold values are tested in parallel and output, giving the user the flexibility to select desired parameters and the associated database. Here, output databases are stored in folders named either T.<num> or F.<num> where T and F represent "ignore iterative clustering" and "do not ignore iterative clustering" respectively. <num> is the SNP assignment threshold. The summary statistics is stored in "log.txt". Typically, a threshold yielding the highest number of unique SNPs with a high SNP assignment threshold is prefarable. Specifying the -a flag overrides user-defined options from -s -t -i and -e flags.  
+**NOTE:** While the optimal value of the SNP assignment threshold will vary depending on the species being analyzed, SMEG has an “auto” option **(-a flag)**, in which different threshold values are tested in parallel and output, giving the user the flexibility to select desired parameters and the associated database. Here, output databases are stored in folders named either T.<num> or F.<num> where T and F represent "ignore iterative clustering" and "do not ignore iterative clustering" respectively. <num> is the SNP assignment threshold. The summary statistics is stored in `log.txt`. Typically, a threshold yielding the highest number of unique SNPs with a high SNP assignment threshold is prefarable. Specifying the -a flag overrides user-defined options from -s -t -i and -e flags.  
+  
+Strains and their corresponding cluster identity will be located in `clusterOutput.txt`
       
 Pre-compiled species database are available from **ftp://ftp.jax.org/ohlab/SMEG_species_database/**
 
@@ -107,7 +109,8 @@ SMEG outputs four statistics for a given sample; (i) the median SMEG score from 
 
 # Example usage
 
-Assuming our downloaded strains (e.g *E. coli* strains) are present in a directory called `mygenomes`, we can build our species database by running the following command.
+This example involves 12 strains of *Faecalibacterium prausnitzii*, majority of which have been re-ordered to save time. The image below shows the phylogenetic tree of the strains.
+
 
 `smeg build_species -g mygenomes -p 16 -o E_coli_species_database`
 
