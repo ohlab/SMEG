@@ -117,7 +117,7 @@ We have provided a mock sample containing 2 strains (indicated with red-arrows) 
 
     wget https://github.com/ohlab/SMEG/archive/1.1.tar.gz
     tar xvf 1.1.tar.gz
-    cd SMEG-1.3/test
+    cd SMEG-1.1/test
     
     smeg build_species -g . -o test_database -a -p 16
 The 'auto'option is activated and you should have 12 different database options. In `test_database/log.txt`, all parameters resulted in the generation of sufficient unique SNPs for all clusters. Thus, we will select the database generated with the highest SNP assignment threshold (e.g. `test_database/T.0.9`). You can also evaluate strains and their corresponding cluster identity from your selected database e.g. `test_database/T.0.9/clusterOutput.txt`
