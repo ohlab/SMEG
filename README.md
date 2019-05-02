@@ -109,7 +109,7 @@ SMEG outputs four statistics for a given sample; (i) the median SMEG score from 
 
 # Example test
 
-This example involves 12 strains of *Faecalibacterium prausnitzii* and the image below shows the phylogenetic tree of those strains.
+This example involves 12 strains of *Faecalibacterium prausnitzii* and the image below shows the resultant phylogenetic tree.
 ![alt text](https://github.com/ohlab/SMEG/blob/master/smeg_test.png)
 
 We have provided a mock sample containing 2 strains (indicated with red-arrows) which we will exclude from database generation. Thus, these strains will act as novel or uncharacterized strains. Therefore, we will create the database using 10 strains. The expected *ori/ter* ratios for CNCM_I_4543.fna and AF10-13.fna are 1.1 and 1.8 respectively in the sample. To save runtime, we reoredered majority of the draft genomes.
