@@ -14,7 +14,9 @@ Installation of SMEG is through anaconda/miniconda. Please follow the exact inst
               
 2.    **Install SMEG**
 
-          Please set up channels in the following order. NOTE that conda-forge has the highest priority. Also, using the latest conda version (4.6.x) significantly speeds up installation. You can upgrade conda with `conda update -n base conda`
+          Please set up channels in the following order. NOTE that conda-forge has the highest priority. 
+          Also, using the latest conda version (4.6.x) significantly speeds up installation. You can upgrade conda 
+          with `conda update -n base conda`
           
           conda config --add channels defaults
           conda config --add channels bioconda
