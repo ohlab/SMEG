@@ -14,17 +14,16 @@ Installation of SMEG is through anaconda/miniconda. Please follow the exact inst
               
 2.    **Install SMEG**
 
-          Please set up channels in the following order. NOTE that conda-forge has the highest priority.
+          Please set up channels in the following order. NOTE that conda-forge has the highest priority. Also, using the latest conda version (4.6.x) significantly speeds up installation. You can upgrade conda with `conda update -n base conda`
           
           conda config --add channels defaults
           conda config --add channels bioconda
           conda config --add channels conda-forge
+          conda config --set channel_priority strict
 
           Install SMEG
-          conda install smeg=1.1.1
+          conda install smeg=1.1=1 r-base=3.5.1
           
-          Reload .bashrc environment `source ~/.bashrc`
-
 **It is highly recommended you run the example test to ensure proper installation before running SMEG on your dataset**. 
 
 # USAGE
