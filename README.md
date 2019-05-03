@@ -21,7 +21,7 @@ Installation of SMEG is through anaconda/miniconda. Please follow the exact inst
           conda config --add channels conda-forge
 
           Install SMEG
-          conda install smeg=1.1
+          conda install smeg=1.1.1
           
           Reload .bashrc environment `source ~/.bashrc`
 
@@ -37,7 +37,7 @@ Installation of SMEG is through anaconda/miniconda. Please follow the exact inst
     
 ### build_species module #
 
-The species database is built using strains of a species of interest. Strains are typically downloaded from NCBI Genbank but custom strains can be used. **Downloaded strains MUST contain at least one COMPLETE reference genome**. In the absence of a complete reference genome, the draft genome with the least fragmentation should be reordered (e.g. with Mauve software) using a strain from a closely related species. Also, genome names should not exceed 35 characters. For species having > 700 strains (e.g. *E. coli*), it is advisable to build the database using only strains with a complete genome. Strains must have .fna, .fa, or .fasta extensions. 
+The species database is built using strains of a species of interest. Strains are typically downloaded from NCBI Genbank but custom strains can be used. **Downloaded strains MUST contain at least one COMPLETE reference genome**. In the absence of a complete reference genome, the draft genome with the least fragmentation should be reordered (e.g. with Mauve software) using a strain from a closely related species. Also, **genome names should not exceed 35 characters**. For species having > 700 strains (e.g. *E. coli*), it is advisable to build the database using only strains with a complete genome. **Strains must have .fna, .fa, or .fasta extensions**. 
 
 For convenience, we provided a script `download_genomes.sh` to retrieve and rename genomes from NCBI Genbank. Simply edit lines 2 and 3 to specify the output directory and species name, respectively, and run the script.
 
@@ -58,12 +58,12 @@ For convenience, we provided a script `download_genomes.sh` to retrieve and rena
                     [default = generate database suitable for both de novo and ref-based methods]
         -h        Display this message
 
-A core-genome phylogeny is constructed using the provided strains which is used to assign strains into clusters. Outlier strains, defined as having pairwise distances 30 times above the median are excluded, as these genomes may have been misclassified taxonomically, or may contain contaminant contigs. Generally, the underlying biological assumption is that strains constituting a cluster have high phylogenetic relatedness and will have similar phenotypic properties like growth rate in a sample. 
+A core-genome phylogeny is constructed and used to assign strains into clusters. Outlier strains, defined as having pairwise distances 30 times above the median are excluded, as these genomes may have been misclassified taxonomically, or may contain contaminant contigs. The underlying biological assumption is that strains constituting a cluster have high phylogenetic relatedness and will have similar phenotypic properties like growth rate in a sample. 
 
 For each cluster, SMEG identifies cluster-specific unique SNPs, i.e. SNPs that are shared between a given proportion of cluster members, but absent in all strains from other clusters. This proportion is referred to as the SNP assignment threshold **(-s flag)**. For instance, setting the SNP assignment threshold to 0.8 indicates that a unique SNP will only be identified if it is shared between at least 80% of the cluster members and absent in strains from other clusters. If the total number of unique SNPs of a given cluster is below a user-specified threshold **(-t flag)**, SMEG iteratively subclassifies the cluster and infers unique SNPs for each sub cluster. SMEG repeats the sub-classification step for a maximum of 3 iterations or until the threshold is met.  Next,
-SMEG retrieves the coordinates of the cluster-specific SNPs in a representative genome, which is randomly selected from the cluster (after favoring for genome completeness) or can be user-defined **(-r flag)**. If the value provided by the -r flag is absent from the genomes or a draft-genome, SMEG defaults to auto-select. 
+SMEG retrieves the coordinates of the cluster-specific SNPs in a representative genome, which is randomly selected from the cluster (after favoring for genome completeness) or can be user-defined **(-r flag)**. If the representative genome provided with the -r flag is absent or a draft-genome, SMEG defaults to auto-select. 
 
-**NOTE:** While the optimal value of the SNP assignment threshold will vary depending on the species being analyzed, SMEG has an “auto” option **(-a flag)**, in which different threshold values are tested in parallel and output, giving the user the flexibility to select desired parameters and the associated database. Here, output databases are stored in folders named either T.{num} or F.{num} where T and F represent "ignore iterative clustering" and "do not ignore iterative clustering" respectively. {num} is the SNP assignment threshold. The summary statistics is stored in `log.txt`. Typically, a threshold yielding the highest number of unique SNPs with a high SNP assignment threshold is prefarable. Specifying the -a flag overrides user-defined options for -s -t -i and -e flags.  
+**NOTE:** While the optimal value of the SNP assignment threshold will vary depending on the species being analyzed, SMEG has an “auto” option **(-a flag)**, in which different threshold values are tested in parallel and output, giving the user the flexibility to select desired parameters and the associated database. Here, output databases are stored in folders named T.{num} or F.{num} where T and F represent "ignore iterative clustering" and "do not ignore iterative clustering" respectively. {num} is the SNP assignment threshold. The summary statistics is stored in `log.txt`. Typically, a database yielding the highest number of unique SNPs with a high SNP assignment threshold is prefarable. Specifying the -a flag overrides user-defined options for -s -t -i and -e flags.  
   
 Strains and their corresponding cluster identity will be located in `clusterOutput.txt`
       
@@ -103,7 +103,7 @@ Pre-compiled species database are available from **ftp://ftp.jax.org/ohlab/SMEG_
 Growth rate is estimated using either a de novo or reference-based estimation approach. The de novo approach assumes no prior knowledge of strain composition in a sample. Here, we assume that uncharacterized strains in a sample can be assigned to a cluster using information on cluster-specific SNPs. In a given sample, a cluster is deemed present if the proportion of unique SNPs with coverage > 0 exceeds the ‘cluster detection threshold’ **(-d flag)**. In scenarios where a sample does not contain all clusters in
 the species database, SMEG further generates a sample-specific SNP profile based solely on the identified clusters in a sample (threshold controlled by **-t flag**). This step increases the number of SNP sites for growth estimation by reducing the number of clusters compared and is especially useful for clusters lacking sufficient unique SNPs in the species database. 
 
-The reference-based approach assumes prior knowledge of strain composition which may have been determined using other tools. Here, SMEG requires the user to provide a file of genome names (if genomes already exist in the species database) **(-g flag)** or file listing **full path** to DESMAN-reconstituted genome sequences **(-a flag)**. **SMEG assumes DESMAN-reconstituted haplotypes are core genes and of the same length and order**. Note that incorrect strain identification will impact SMEG’s accuracy, because only user-supplied strains are used to estimate growth rate.
+The reference-based approach assumes prior knowledge of strain composition which may have been determined using other tools. Here, SMEG requires the user to provide a file of genome names (if genomes already exist in the species database) **(-g flag)** or file listing **full path** to DESMAN-reconstituted genome sequences **(-a flag)**. **SMEG assumes DESMAN-reconstituted haplotypes are core genes and of the same length and order**. Note that incorrect strain identification will impact SMEG’s accuracy using this option, because only user-supplied strains are used to estimate growth rate.
 
 # Output
 
@@ -115,7 +115,7 @@ This example involves 12 strains of *Faecalibacterium prausnitzii* and the image
 
 ![alt text](https://github.com/ohlab/SMEG/blob/master/smeg_tree.png)
 
-We have provided a mock sample containing 2 strains (indicated with red-arrows) which we will exclude from database generation. Thus, these strains will act as novel or uncharacterized strains. Therefore, we will create the database using 10 strains. The expected *ori/ter* ratios for CNCM_I_4543.fna and AF10-13.fna are 1.1 and 1.8 respectively in the sample. To save runtime, we reoredered majority of the draft genomes.
+We have provided a mock sample containing 2 strains (indicated with red-arrows) which we will exclude from database generation. The excluded strains will act as hypothetical uncharacterized or novel strains. We will thus, create the database using 10 strains. The expected *ori/ter* ratios for CNCM_I_4543.fna and AF10-13.fna are 1.1 and 1.8 respectively in the sample. To save runtime, we reoredered majority of the draft genomes.
 
     wget https://github.com/ohlab/SMEG/archive/1.1.tar.gz
     tar xvf 1.1.tar.gz
