@@ -116,7 +116,7 @@ This example involves 12 strains of *Faecalibacterium prausnitzii* and the image
 
 ![alt text](https://github.com/ohlab/SMEG/blob/master/smeg_tree.png)
 
-We have provided a mock sample containing 2 strains (indicated with red-arrows) which we will exclude from database generation. The excluded strains will act as hypothetical uncharacterized or novel strains. We will thus, create the database using 10 strains. The expected *ori/ter* ratios for CNCM_I_4543.fna and AF10-13.fna are 1.1 and 1.8 respectively in the sample. To save runtime, we reoredered majority of the draft genomes.
+We have provided a mock metagenomic sample containing 2 strains (indicated with red-arrows) which we will exclude from database generation. The excluded strains will act as hypothetical uncharacterized or novel strains. We will thus, create the database using 10 strains. The expected *ori/ter* ratios for CNCM_I_4543.fna and AF10-13.fna are 1.1 and 1.8 respectively in the sample. To save runtime, we reoredered majority of the draft genomes.
 
     wget https://github.com/ohlab/SMEG/archive/1.1.tar.gz
     tar xvf 1.1.tar.gz
