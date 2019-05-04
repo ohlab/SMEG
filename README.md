@@ -68,7 +68,6 @@ SMEG retrieves the coordinates of the cluster-specific SNPs in a representative 
   
 Strains and their corresponding cluster identity will be located in `clusterOutput.txt`
       
-Pre-compiled species database are available from **ftp://ftp.jax.org/ohlab/SMEG_species_database/**
 
 ### growth_est module #
 
