@@ -125,7 +125,7 @@ We have provided a mock metagenomic sample containing 2 strains (indicated with 
     cd SMEG-1.1/test
     
     smeg build_species -g . -o test_database -a -p 16
-The 'auto'option is activated and you should have 12 different database options. In `test_database/log.txt`, all parameters resulted in the generation of sufficient unique SNPs for all clusters. Thus, we will select the database generated with the highest SNP assignment threshold (e.g. `test_database/T.0.9`). You can also evaluate strains and their corresponding cluster identity from your selected database e.g. `test_database/T.0.9/clusterOutput.txt`
+The 'auto' option is activated and you should have different database folders created using different parameters. In `test_database/log.txt`, all parameters resulted in the generation of sufficient unique SNPs for all clusters. Thus, we will select the database generated with the highest SNP assignment threshold (e.g. `test_database/T.0.9`). You can also evaluate strains and their corresponding cluster identity from your selected database e.g. `test_database/T.0.9/clusterOutput.txt`
 
     smeg growth_est -o Result_denovo -r . -s test_database/T.0.9 -p 8 -x fastq.gz
 
