@@ -2,7 +2,7 @@
 cd /path/to/output/directory/
 wget ftp://ftp.ncbi.nlm.nih.gov/genomes/genbank/bacteria/Bacteroides_vulgatus/assembly_summary.txt
 genomeNum=$(grep -c "." assembly_summary.txt)
-if [ $genomeNum > 700 ]; then
+if [ $genomeNum -gt 700 ]; then
 grep "Complete\|Chromosome" assembly_summary.txt | cut -f20 > var.txt
 else
 cut -f20 assembly_summary.txt | sed '1,2d' > var.txt
