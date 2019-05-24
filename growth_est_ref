@@ -114,9 +114,9 @@ sed '1d' uniqueSNPs | cut -f1 | sort | uniq > passed_strains.txt
 for strains in `cat passed_strains.txt`
 do
 grep -P '(^|\s)\K'$strains'(?=\s|$)' uniqueSNPs  > $strains.Input.txt || exit 1
-bowtie2-build $strains $strains.fna -q || exit 1
 echo "$strains" >> strain_list.txt
-cat $strains > $strains.fna
+cat $strains | grep -v ">" | tr -d '[:space:]' | fold -w 60 | sed "1 i\>$strains" | sed -e '$a\ ' > $strains.fna
+bowtie2-build $strains.fna $strains.fna -q || exit 1
 rm $strains
 done
 
