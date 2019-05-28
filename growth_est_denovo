@@ -179,9 +179,14 @@ Rscript $SMEG_DIR/SNP_method.R -i $i.temp1.txt -c $COV_CUTOFF -d $dnaA -s $MIN_S
 awk -F'\t' '{ $2 = ($2 > 10 ? 1 : $2) } 1' OFS='\t' $i.temp1.txt | awk '$3 > '$COV_CUTOFF'' | sed "s/$i.//g" > $i.SMEG.txt
 rm $i.temp1.txt
 printf '1\ni\nCluster\tSMEG\tCoverage\tNo of SNPs\tSMEG range\n.\nw\n' | ed -s $i.SMEG.txt
+
+exec 3>&2
+exec 2> /dev/null
 rm $i.cluster*.cov.txt
 rm $i.passed_clusters
-#####3
+exec 2>&3
+
+#####
 else
 #####
 rm $i.passed_clusters
