@@ -187,8 +187,8 @@ rm $reference.coord.txt
 rm polymorphic.site.coverage2
 
 done
-Rscript $SMEG_DIR/SNP_method_ref.R -i $i.temp1.txt -c $COV_CUTOFF -d 0.5 -s $MIN_SNP || exit 1
-awk -F'\t' '{ $2 = ($2 > 10 ? 1 : $2) } 1' OFS='\t' $i.temp1.txt | awk '$3 > '$COV_CUTOFF'' | sed "s/$i.//g" > $i.SMEG.txt || exit 1
+Rscript $SMEG_DIR/SNP_method_ref.R -i $i.temp1.txt -c $COV_CUTOFF -d 0.5 -s $MIN_SNP 
+awk -F'\t' '{ $2 = ($2 > 10 ? 1 : $2) } 1' OFS='\t' $i.temp1.txt | awk '$3 > '$COV_CUTOFF'' | sed "s/$i.//g" > $i.SMEG.txt 
 rm $i.temp1.txt
 printf '1\ni\nStrain\tSMEG\tCoverage\tNo of SNPs\tSMEG range\n.\nw\n' | ed -s $i.SMEG.txt
 
