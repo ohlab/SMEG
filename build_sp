@@ -254,7 +254,9 @@ paste -d'\t' core_gene_coordinate_in_align core_genes.txt > bedfile
 rm core_gene_coordinate_in_align core_genes.txt
 
 samtools faidx $repGenome.aln
-bedtools getfasta -fi $repGenome.aln -bed bedfile -name | sed 's/-//g'  | fold -w 60  >> core_genes.fa
+bedtools getfasta -fi $repGenome.aln -bed bedfile -name | sed 's/-//g'  | fold -w 60  >> core_genes2.fa
+awk 'BEGIN {RS = ">" ; FS = "\n" ; ORS = ""} \$2 {print ">"\$0}' core_genes2.fa > core_genes.fa
+rm core_genes2.fa
 rm bedfile
 
 awk '/^>/ {if (seqlen){print seqlen}; print ;seqlen=0;next; } { seqlen += length(\$0)}END{print seqlen}' core_genes.fa | grep -v ">" > geneLengths
