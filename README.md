@@ -106,7 +106,7 @@ Strains and their corresponding cluster identity will be located in `clusterOutp
 Growth rate is estimated using either a de novo or reference-based estimation approach. The de novo approach assumes no prior knowledge of strain composition in a sample. Here, we assume that uncharacterized strains in a sample can be assigned to a cluster using information on cluster-specific SNPs. In a given sample, a cluster is deemed present if the proportion of unique SNPs with coverage > 0 exceeds the ‘cluster detection threshold’ **(-d flag)**. In scenarios where a sample does not contain all clusters in
 the species database, SMEG further generates a sample-specific SNP profile based solely on the identified clusters in a sample (threshold controlled by **-t flag**). This step increases the number of SNP sites for growth estimation by reducing the number of clusters compared and is especially useful for clusters lacking sufficient unique SNPs in the species database. 
 
-The reference-based approach assumes prior knowledge of strain composition which may have been determined using other tools. Here, SMEG requires the user to provide a file of genome names (if genomes already exist in the species database) **(-g flag)** or file listing **full path** to DESMAN-reconstituted genome sequences **(-a flag)**. **SMEG assumes DESMAN-reconstituted haplotypes are core genes and of the same length and order**. Note that incorrect strain identification will impact SMEG’s accuracy using this option, because only user-supplied strains are used to estimate growth rate.
+The reference-based approach assumes prior knowledge of strain composition which may have been determined using other tools. Here, SMEG requires the user to provide a file of genome names (if genomes already exist in the species database) **(-g flag)** or file listing **full path** to DESMAN-reconstituted genome sequences **(-a flag)**. **SMEG assumes DESMAN-reconstituted haplotypes are core genes and of the same length and order [this is usually the default output for DESMAN haplotypes anyways]**. Note that incorrect strain identification will impact SMEG’s accuracy using this option, because only user-supplied strains are used to estimate growth rate.
 
 # Output
 
@@ -118,7 +118,7 @@ This example involves 12 strains of *Faecalibacterium prausnitzii* and the image
 
 ![alt text](https://github.com/ohlab/SMEG/blob/master/smeg_tree.png)
 
-We have provided a mock metagenomic sample containing 2 strains (indicated with red-arrows) which we will exclude from database generation. The excluded strains will act as hypothetical uncharacterized or novel strains. We will thus, create the database using 10 strains. The expected *ori/ter* ratios for CNCM_I_4543.fna and AF10-13.fna are 1.1 and 1.8 respectively in the sample. To save runtime, we reoredered majority of the draft genomes.
+We have provided a mock metagenomic sample containing 2 strains (indicated with red-arrows) which we will exclude from database generation. The excluded strains will act as hypothetical uncharacterized or novel strains. We will thus, create the database using 10 strains. The expected *ori/ter* ratios for CNCM_I_4543.fna and AF10-13.fna are ~1.1 and ~1.8 respectively in the sample. To save runtime, we reoredered majority of the draft genomes.
 
     wget https://github.com/ohlab/SMEG/archive/1.1.tar.gz
     tar xvf 1.1.tar.gz
