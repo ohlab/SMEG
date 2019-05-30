@@ -7,7 +7,7 @@ SMEG pipeline consists of two modules;
 1. < build_species > - generates a database for a specie of interest using its member strains
 2. < growth_est > - measure strain-specific growth rates in your dataset using either a de novo or reference-based approach
 
-# INSTALLATION
+# INSTALLATION (Linux)
 Installation of SMEG is through anaconda/miniconda. Please follow the **EXACT** installation guidelines provided in this section.
 
 1.    Ensure you have **gcc compiler >=4.8.5**
@@ -27,7 +27,7 @@ Installation of SMEG is through anaconda/miniconda. Please follow the **EXACT** 
           prior to installation e.g. "conda create --name SMEG" and "source activate SMEG"
           
           Install SMEG
-          conda install smeg=1.1.2 r-base=3.5.1
+          conda install smeg=1.1.3 r-base=3.5.1
           
 **It is highly recommended you run the example test to ensure proper installation before running SMEG on your dataset**. 
 
