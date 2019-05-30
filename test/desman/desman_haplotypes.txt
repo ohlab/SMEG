@@ -1,0 +1,2 @@
+../desman/AF.core.fasta
+../desman/CN.core.fasta
