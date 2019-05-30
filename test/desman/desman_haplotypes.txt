@@ -1,2 +1,2 @@
-../desman/AF.core.fasta
-../desman/CN.core.fasta
+../desman/haplotype_0.fa
+../desman/haplotype_1.fa
