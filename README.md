@@ -106,13 +106,29 @@ Strains and their corresponding cluster identity will be located in `clusterOutp
 Growth rate is estimated using either a de novo or reference-based estimation approach. The de novo approach assumes no prior knowledge of strain composition in a sample. Here, we assume that uncharacterized strains in a sample can be assigned to a cluster using information on cluster-specific SNPs. In a given sample, a cluster is deemed present if the proportion of unique SNPs with coverage > 0 exceeds the ‘cluster detection threshold’ **(-d flag)**. In scenarios where a sample does not contain all clusters in
 the species database, SMEG further generates a sample-specific SNP profile based solely on the identified clusters in a sample (threshold controlled by **-t flag**). This step increases the number of SNP sites for growth estimation by reducing the number of clusters compared and is especially useful for clusters lacking sufficient unique SNPs in the species database. 
 
-The reference-based approach assumes prior knowledge of strain composition which may have been determined using other tools. Here, SMEG requires the user to provide a file of genome names (if genomes already exist in the species database) **(-g flag)** or file listing **full path** to DESMAN-reconstituted genome sequences **(-a flag)**. **SMEG assumes DESMAN-reconstituted haplotypes are core genes and of the same length and order [this is usually the default output for DESMAN haplotypes anyway]**. Note that incorrect strain identification will impact SMEG’s accuracy using this option, because only user-supplied strains are used to estimate growth rate.
+The reference-based approach assumes prior knowledge of strain composition which may have been determined using other tools. Here, SMEG requires the user to provide a file of genome names (if genomes already exist in the species database) **(-g flag)** or file listing **full path** to DESMAN-reconstituted genome sequences **(-a flag)**. 
+
+An example of an input file using the -g flag is as follows:
+      
+      E_coli_O157_H7.fna
+      E_coli_K-12.fna
+whereas, a typical file input using the -a flag would be: 
+      
+      /path/to/folder/haplotype_0.fa
+      /path/to/folder/haplotype_1.fa
+      /path/to/folder/haplotype_2.fa
+
+**SMEG assumes DESMAN-reconstituted haplotypes are core genes and of the same length and order [this is usually the default output for DESMAN haplotypes anyway]**. Note that incorrect strain identification will impact SMEG’s accuracy using this option, because only user-supplied strains are used to estimate growth rate.
 
 # Output
 
-SMEG outputs four statistics for a given sample; (i) the median SMEG score from 3 imputations, (ii) the coverage of phylogenetic clusters (in the de novo approach) or the user provided strains (in the reference-based approach), (iii) the number of non-zero SNP sites used for the analysis, and (iv) the range of SMEG with different imputations. strains/clusters with SNPs below the minimum cutoff **(-u flag)** will be assigned a SMEG score of 1. Finally, if -e flag is set, all output will be merged into a single matrix file called "merged_table.txt" and a heatmap (.pdf) displaying growth rates (SMEG) across all samples with hierachical clustering is generated. 
+SMEG outputs four statistics for a given sample; (i) the median SMEG score from 3 imputations, (ii) the coverage of phylogenetic clusters (in the de novo approach) or the user provided strains (in the reference-based approach), (iii) the number of non-zero SNP sites used for the analysis, and (iv) the range of SMEG with different imputations. strains/clusters with SNPs below the minimum cutoff **(-u flag)** will be assigned a SMEG score of 1. Finally, if -e flag is set, all output will be merged into a single matrix file called "merged_table.txt" and a heatmap (.pdf) displaying growth rates (SMEG) across all samples with hierachical clustering is generated.
+
+**Please note that strain coverage is calculated using only available unique SNPs and thus, the output coverage may not be the most accurate**.  
 
 # Example test
+
+**Example 1 - de novo estimation**
 
 This example involves 12 strains of *Faecalibacterium prausnitzii* and the image below shows the resultant phylogenetic tree.
 
@@ -128,6 +144,11 @@ We have provided a mock metagenomic sample containing 2 strains (indicated with 
 The 'auto' option is activated and you should have different database folders created using different parameters. In `test_database/log.txt`, all parameters resulted in the generation of sufficient unique SNPs for all clusters. Thus, we will select the database generated with the highest SNP assignment threshold (e.g. `test_database/T.0.9`). You can also evaluate strains and their corresponding cluster identity from your selected database e.g. `test_database/T.0.9/clusterOutput.txt`
 
     smeg growth_est -o Result_denovo -r . -s test_database/T.0.9 -p 8 -x fastq.gz
+**Example 2 - estimation using DESMAN-reconstituted haplotypes**
+
+Using the same excluded strains as example 1 above, we extracted and ordered core genes to represent hypothetical DESMAN-reconstituted haplotypes.
+      
+    smeg growth_est -m 1 -o Result_DESMAN -r . -a desman/desman_haplotypes.txt -p 8 -x fastq.gz -n 3
 
 ### DEPENDENCIES #
     gcc, GNU parallel, Mauve, roary, prokka, bowtie2, samtools, bamtools, bedtools, blastn
