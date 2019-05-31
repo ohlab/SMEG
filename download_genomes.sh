@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 cd /path/to/output/directory/
 wget ftp://ftp.ncbi.nlm.nih.gov/genomes/genbank/bacteria/Bacteroides_vulgatus/assembly_summary.txt
 genomeNum=$(grep -c "." assembly_summary.txt)
