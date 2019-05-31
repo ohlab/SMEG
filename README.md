@@ -43,7 +43,7 @@ Installation of SMEG is through anaconda/miniconda. Please follow the **EXACT** 
 
 The species database is built using strains of a species of interest. Strains are typically downloaded from NCBI Genbank but custom strains can be used. **Downloaded strains MUST contain at least one COMPLETE reference genome**. In the absence of a complete reference genome, the draft genome with the least fragmentation should be reordered (e.g. with Mauve software) using a strain from a closely related species. Also, **genome names should not exceed 35 characters**. For species having > 700 strains (e.g. *E. coli*), it is advisable to build the database using only strains with a complete genome. **Strains must have .fna, .fa, or .fasta extensions**. 
 
-For convenience, we provided a script `download_genomes.sh` to retrieve and rename genomes from NCBI Genbank. Simply edit lines 2 and 3 to specify the output directory and species name, respectively, and run the script.
+For convenience, we provided a script `download_genomes.sh` to retrieve and rename genomes from NCBI Genbank. Simply edit lines 3 and 4 to specify the output directory and species name, respectively, and run the script.
 
     smeg build_species <options>
         <options>
