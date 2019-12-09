@@ -26,7 +26,7 @@ Installation of SMEG is through anaconda/miniconda. Please follow the **EXACT** 
           prior to installation e.g. "conda create --name SMEG" and "source activate SMEG"
           
           Install SMEG
-          conda install smeg=1.1.4 r-base=3.5.1
+          conda install smeg=1.1.5 r-base=3.5.1
           
 **It is highly recommended you run the example test to ensure proper installation before running SMEG on your dataset**. 
 
