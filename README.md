@@ -83,8 +83,8 @@ Strains and their corresponding cluster identity will be located in `clusterOutp
       -o         Output directory
       -s         Species database directory
       -m  INT    SMEG method (0 = de novo-based method, 1 = reference-based method) [default = 0]
-      -c  FLOAT  Coverage cutoff (>= 1) [default 1]
-      -u  INT    Minimum number of SNPs to estimate growth rate [default = 50]
+      -c  FLOAT  Coverage cutoff (>= 0.5) [default 0.5]
+      -u  INT    Minimum number of SNPs to estimate growth rate [default = 100]
       -l         Path to file listing a subset of reads for analysis
                  [default = analyze all samples in Reads directory]
 
