@@ -1,5 +1,5 @@
 # SMEG
-**Strain-level MEtagenomic Growth estimation (SMEG)** measures growth rates of bacterial subspecies or strains from complex metagenomic
+**Strain-level Metagenomic Estimation of Growth rate (SMEG)** measures growth rates of bacterial subspecies or strains from complex metagenomic
 samples. SMEG is capable of identifying novel or uncharacterized strains in a given sample prior to growth estimation. 
 
 SMEG pipeline consists of two modules;
@@ -21,7 +21,6 @@ Installation of SMEG is through anaconda/miniconda. Please follow the **EXACT** 
           conda config --add channels defaults
           conda config --add channels bioconda
           conda config --add channels conda-forge
-          conda config --set channel_priority strict
 
           To avoid compatibility issues with dependencies, we recommend creating a new conda environment for SMEG 
           prior to installation e.g. "conda create --name SMEG" and "source activate SMEG"
