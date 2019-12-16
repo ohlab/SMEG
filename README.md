@@ -76,6 +76,8 @@ Below is an example of contents of `log.txt` when the auto option is activated. 
 ![alt text](https://github.com/ohlab/SMEG/blob/master/smeg_logfile_example.png)
       
 
+***Pre-compiled databases for some bacterial species commonly encountered in human-associated metagenomes can be retrieved from ftp://ftp.jax.org/ohlab/SMEG_database/***
+
 ### growth_est module #
 
     smeg growth_est <options>
