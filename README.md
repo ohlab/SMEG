@@ -67,9 +67,13 @@ For each cluster, SMEG identifies cluster-specific unique SNPs, i.e. SNPs that a
 SMEG retrieves the coordinates of the cluster-specific SNPs in a representative genome, which is randomly selected from the cluster (after favoring for genome completeness) or can be user-defined **(-r flag)**. If the representative genome provided with the -r flag is absent or a draft-genome, SMEG defaults to auto-select. 
 
 **----- "auto" (-a) option -----**
-While the optimal value of the SNP assignment threshold will vary depending on the species being analyzed, SMEG has an “auto” option **(-a flag)**, in which different threshold values are tested in parallel and output, giving the user the flexibility to select desired parameters and the associated database. Here, output databases are stored in folders named T.{num} or F.{num} where T and F represent "ignore iterative clustering" and "do not ignore iterative clustering" respectively. {num} is the SNP assignment threshold. The summary statistics is stored in `log.txt`. Typically, a database yielding the highest number of unique SNPs with a high SNP assignment threshold is prefarable. Specifying the -a flag overrides user-defined options for -s -t -i and -e flags.  
-  
-Strains and their corresponding cluster identity will be located in `clusterOutput.txt`
+
+While the optimal value of the SNP assignment threshold will vary depending on the species being analyzed, SMEG has an “auto” option **(-a flag)**, in which different threshold values are tested in parallel and output, giving the user the flexibility to select desired parameters and the associated database. Here, output databases are stored in folders named T.{num} or F.{num} where T and F represent "ignore iterative clustering" and "do not ignore iterative clustering" respectively. {num} is the SNP assignment threshold. The summary statistics is stored in `log.txt`. Specifying the -a flag overrides user-defined options for -s -t -i and -e flags.  Also, strains and their corresponding cluster identity will be located in `clusterOutput.txt`
+
+Below is an example of contents of `log.txt` when the auto option is activated. Ideally, we want a database with a high SNP assignment threshold and sufficient unique SNPs for most clusters. In this example, the preferred database will be that created with a SNP assignment threshold of 0.7 with iterative clustering because SMEG could generate sufficient unique SNPs for all clusters. 
+
+
+![alt text](https://github.com/ohlab/SMEG/blob/master/smeg_logfile_example.png)
       
 
 ### growth_est module #
@@ -119,6 +123,10 @@ whereas, a typical file input using the -a flag would be:
       /path/to/folder/haplotype_2.fa
 
 **SMEG assumes DESMAN-reconstituted haplotypes are core genes and of the same length and order [this is usually the default output for DESMAN haplotypes anyway]**. Note that incorrect strain identification will impact SMEG’s accuracy using this option, because only user-supplied strains are used to estimate growth rate.
+
+**------ Coverage requirements ------**
+
+SMEG can accurately detect clusters at up to 0.5x coverage. However, it requires cluster coverage of 5x and 0.5x for microbes with high- and low- within-species genetic diversity, respectively, to accurately estimate growth rate. We recommend a 5x cutoff without a priori knowledge of the genomic characteristics of the species of interest.
 
 # Output
 
