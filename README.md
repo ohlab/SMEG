@@ -12,7 +12,7 @@ SMEG pipeline consists of two modules;
    OPTION 1 - **Singularity**
    
     - # Retrieve the image file
-      Download "smeg.sif" from ftp://ftp.jax.org/ohlab/SMEG_installation/
+      wget ftp://ftp.jax.org/ohlab/SMEG_installation/smeg.sif
       
     - # Run a quick test
       singularity exec smeg.sif smeg -h
