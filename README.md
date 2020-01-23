@@ -7,7 +7,7 @@ SMEG pipeline consists of two modules;
 1. < build_species > - generates a database for a specie of interest using its member strains
 2. < growth_est > - measure strain-specific growth rates in your dataset using either a de novo or reference-based approach
 
-# INSTALLATION (Linux)
+# INSTALLATION
 
    OPTION 1 - **Singularity**
    
@@ -155,9 +155,16 @@ We have provided a mock metagenomic sample containing 2 strains (indicated with 
     tar xvf 1.1.1.tar.gz
     cd SMEG-1.1.1/test
     
+    # First, let's create the species database
     smeg build_species -g . -o test_database -a -p 16
-The 'auto' option is activated and you should have different database folders created using different parameters. In `test_database/log.txt`, all parameters resulted in the generation of sufficient unique SNPs for all clusters. Thus, we will select the database generated with the highest SNP assignment threshold (e.g. `test_database/T.0.9`). You can also evaluate strains and their corresponding cluster identity from your selected database e.g. `test_database/T.0.9/clusterOutput.txt`
+    
+    # The 'auto' option is activated and you should have different database directories created using different 
+    # parameters. You will note that in `test_database/log.txt`, all parameters resulted in the generation of 
+    # sufficient unique SNPs for all clusters. Thus, we will select the database generated with the highest SNP 
+    # assignment threshold (e.g. `test_database/T.0.9`). You can also evaluate strains and their corresponding 
+    # cluster identity from your selected database e.g. `test_database/T.0.9/clusterOutput.txt`
 
+    # Next, estimate growth rate
     smeg growth_est -o Result_denovo -r . -s test_database/T.0.9 -p 8 -x fastq.gz
 **Example 2 - estimation using DESMAN-reconstituted haplotypes**
 
