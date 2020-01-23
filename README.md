@@ -8,16 +8,21 @@ SMEG pipeline consists of two modules;
 2. < growth_est > - measure strain-specific growth rates in your dataset using either a de novo or reference-based approach
 
 # INSTALLATION (Linux)
-Installation of SMEG is through anaconda/miniconda. Please follow the **EXACT** installation guidelines provided in this section.
 
-1.    Ensure you have **gcc compiler >=4.8.5**
-              
-2.    **Install SMEG**
-
+   OPTION 1 - **Singularity**
+   
+    - # Retrieve the image file
+      wget ftp://ftp.jax.org/ohlab/SMEG_installation/smeg.sif
+      
+    - #Run a quick test
+      singularity exec smeg.sif smeg -h
+      
+   OPTION 2 - **Bioconda**
+   
+      Please follow the EXACT installation guidelines provided in this section.
+       - # Ensure you have gcc compiler >=4.8.5
+      
           Please set up channels in the following order. NOTE that conda-forge has the highest priority. 
-          Also, using the latest conda version (4.6.x) significantly speeds up installation. You can upgrade conda 
-          with "conda update -n base conda"
-          
           conda config --add channels defaults
           conda config --add channels bioconda
           conda config --add channels conda-forge
@@ -25,7 +30,7 @@ Installation of SMEG is through anaconda/miniconda. Please follow the **EXACT** 
           To avoid compatibility issues with dependencies, we recommend creating a new conda environment for SMEG 
           prior to installation e.g. "conda create --name SMEG" and "source activate SMEG"
           
-          Install SMEG
+       - # Install SMEG
           conda install smeg=1.1.5 prokka=1.11 r-base=3.5.1
           
 **It is highly recommended you run the example test to ensure proper installation before running SMEG on your dataset**. 
