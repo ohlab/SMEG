@@ -33,7 +33,8 @@ SMEG pipeline consists of two modules;
        - # Install SMEG
           conda install smeg=1.1.5 prokka=1.11 r-base=3.5.1
           
-**It is highly recommended you run the example test to ensure proper installation before running SMEG on your dataset**. 
+**It is highly recommended you run the example test to ensure proper installation before running SMEG on your dataset. 
+Also, make sure you read the "coverage requirements" section before interpreting your results**. 
 
 # USAGE
 
@@ -131,7 +132,7 @@ whereas, a typical file input using the -a flag would be:
 
 **SMEG assumes DESMAN-reconstituted haplotypes are core genes and of the same length and order [this is usually the default output for DESMAN haplotypes anyway]**. Note that incorrect strain identification will impact SMEG’s accuracy using this option, because only user-supplied strains are used to estimate growth rate.
 
-**------ Coverage requirements ------**
+**------ COVERAGE REQUIREMENTS ------**
 
 SMEG can accurately detect clusters at up to 0.5x coverage. However, it requires cluster coverage of 5x and 0.5x for microbes with high- and low- within-species genetic diversity, respectively, to accurately estimate growth rate. We recommend a 5x cutoff without a priori knowledge of the genomic characteristics of the species of interest.
 
