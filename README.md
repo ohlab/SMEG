@@ -21,9 +21,7 @@ SMEG pipeline consists of two modules;
    
       Please follow the EXACT installation guidelines provided in this section.
        - # Ensure you have gcc compiler >=4.8.5. 
-       - # Also, "rename" is not default on some Linux-machines and needs
-          sudo apt-get install -y rename
-      
+       
           Please set up channels in the following order. NOTE that conda-forge has the highest priority. 
           conda config --add channels defaults
           conda config --add channels bioconda
@@ -34,6 +32,9 @@ SMEG pipeline consists of two modules;
           
        - # Install SMEG
           conda install smeg=1.1.5 prokka=1.11 r-base=3.5.1
+          
+       - # Also, "rename" is not default on some Linux-machines and needs to be installed
+          sudo apt-get install -y rename
           
 **It is highly recommended you run the example test to ensure proper installation before running SMEG on your dataset. 
 Also, make sure you read the "coverage requirements" section before interpreting your results**. 
