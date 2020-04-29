@@ -20,7 +20,9 @@ SMEG pipeline consists of two modules;
    OPTION 2 - **Bioconda**
    
       Please follow the EXACT installation guidelines provided in this section.
-       - # Ensure you have gcc compiler >=4.8.5
+       - # Ensure you have gcc compiler >=4.8.5. 
+       - # Also, "rename" is not default on some Linux-machines and needs
+          sudo apt-get install -y rename
       
           Please set up channels in the following order. NOTE that conda-forge has the highest priority. 
           conda config --add channels defaults
