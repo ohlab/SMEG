@@ -7,6 +7,11 @@ SMEG pipeline consists of two modules;
 1. < build_species > - generates a database for a specie of interest using its member strains
 2. < growth_est > - measure strain-specific growth rates in your dataset using either a de novo or reference-based approach
 
+SMEG is described in 
+
+Emiola, A., Zhou, W., Oh, J. (2020) "Metagenomic growth rate inferences of strains in situ,"
+*Science Advances*, 6(17), p.eaaz2299 (https://advances.sciencemag.org/content/6/17/eaaz2299)
+
 # INSTALLATION
 
    OPTION 1 - **Singularity**
@@ -141,7 +146,7 @@ SMEG can accurately detect clusters at up to 0.5x coverage. However, it requires
 
 # Output
 
-SMEG outputs four statistics for a given sample; (i) the median SMEG score from 3 imputations, (ii) the coverage of phylogenetic clusters (in the de novo approach) or the user provided strains (in the reference-based approach), (iii) the number of non-zero SNP sites used for the analysis, and (iv) the range of SMEG with different imputations. strains/clusters with SNPs below the minimum cutoff **(-u flag)** will be assigned a SMEG score of 1. Finally, if -e flag is set, all output will be merged into a single matrix file called "merged_table.txt" and a heatmap (.pdf) displaying growth rates (SMEG) across all samples with hierachical clustering is generated.
+SMEG outputs four statistics for a given sample; (i) the median SMEG score from 3 imputations, (ii) the coverage of phylogenetic clusters (in the de novo approach) or the user provided strains (in the reference-based approach), (iii) the number of non-zero SNP sites used for the analysis, and (iv) the range of SMEG with different imputations. Strains/clusters with SNPs below the minimum cutoff **(-u flag)** will be assigned a SMEG score of 1. Finally, if -e flag is set, all output will be merged into a single matrix file called "merged_table.txt" and a heatmap (.pdf) displaying growth rates (SMEG) across all samples with hierachical clustering is generated.
 
 **Please note that strain coverage is calculated using only available unique SNPs and thus, the output coverage may not be the most accurate**.  
 
